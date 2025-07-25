@@ -1147,3 +1147,15 @@ kbd {
   background: rgba(96, 189, 255, 0.85) !important;
   color: var(--ink) !important;
 }
+
+/* Shimmer skeleton animation */
+.shimmer {
+  background: linear-gradient(90deg, var(--ink-2) 25%, var(--ink-3) 50%, var(--ink-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmerMove 1.5s infinite;
+  border-radius: var(--radius);
+}
+@keyframes shimmerMove {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
