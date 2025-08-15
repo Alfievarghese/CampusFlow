@@ -1176,3 +1176,9 @@ kbd {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Page content fade-in */
+@media (prefers-reduced-motion: no-preference) {
+  .admin-main > * { animation: fadeIn 0.25s ease both; }
+}
