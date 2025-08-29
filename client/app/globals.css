@@ -1204,3 +1204,11 @@ kbd {
   z-index: 200;
 }
 [data-tooltip]:hover::after { opacity: 1; }
+
+
+/* Print styles */
+@media print {
+  .sidebar, .btn, nav { display: none !important; }
+  .admin-main { margin-left: 0 !important; }
+  body { background: white; color: black; }
+}
