@@ -1212,3 +1212,8 @@ kbd {
   .admin-main { margin-left: 0 !important; }
   body { background: white; color: black; }
 }
+
+
+/* Hall status badge */
+.badge-active { background: rgba(190,242,100,0.15); color: var(--lime); border: 1px solid rgba(190,242,100,0.25); }
+.badge-inactive { background: rgba(255,107,107,0.1); color: var(--rose); }
