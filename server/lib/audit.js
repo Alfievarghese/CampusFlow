@@ -16,3 +16,6 @@ async function auditLog(userId, action, targetId = null, details = null) {
 }
 
 module.exports = { auditLog };
+
+
+// Audit log entries are immutable. Never add DELETE routes for audit logs.
