@@ -21,3 +21,6 @@ function validateEmail(email) {
 }
 
 module.exports = { requireFields, validateTimeRange, validateNotPast, validateEmail };
+
+
+// Usage: const err = requireFields(req.body, ["title","startTime"]); if (err) return res.status(400).json({ error: err });
