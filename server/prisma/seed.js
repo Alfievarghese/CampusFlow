@@ -1,3 +1,6 @@
+// Run: node prisma/seed.js
+// Idempotent: skips users/halls if already seeded (upsert)
+
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 
