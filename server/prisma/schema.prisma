@@ -45,6 +45,7 @@ model Event {
   hallId             String
   hall               Hall      @relation(fields: [hallId], references: [id])
   status             String    @default("CONFIRMED") // CONFIRMED, PENDING, CANCELLED, CONFLICT_REQUESTED
+  // Academic, Cultural, Sports, Technical, Workshop, Social, Other
   category           String
   inviteType         String    @default("PUBLIC") // PUBLIC, INVITE_ONLY
   expectedAttendance Int
