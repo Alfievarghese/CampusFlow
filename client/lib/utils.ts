@@ -32,3 +32,14 @@ export function eventDuration(start: string, end: string): string {
   if (mins === 0) return hrs + 'h';
   return hrs + 'h ' + mins + 'm';
 }
+
+
+/** Format a number as Indian Rupees (for RSVP fees, future use) */
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
+}
+
+/** Capitalize every word in a string */
+export function titleCase(str: string): string {
+  return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
