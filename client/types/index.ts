@@ -51,3 +51,22 @@ export interface SystemSettings {
   maxAdmins: number;
   updatedAt: string;
 }
+
+
+export interface RSVP {
+  id: string;
+  eventId: string;
+  userIdentifier: string;
+  userName: string;
+  status: 'INTERESTED' | 'GOING';
+  createdAt: string;
+}
+
+export interface AuditLog {
+  id: string;
+  action: string;
+  targetId?: string;
+  details?: string;
+  timestamp: string;
+  user?: { name: string; email: string };
+}
