@@ -70,3 +70,29 @@ export interface AuditLog {
   timestamp: string;
   user?: { name: string; email: string };
 }
+
+
+export interface InviteRequest {
+  id: string;
+  eventId: string;
+  requesterName: string;
+  requesterEmail: string;
+  requesterInfo?: string;
+  status: RequestStatus;
+  comment?: string;
+  createdAt: string;
+  event: { id: string; title: string };
+}
+
+export interface ConflictRequest {
+  id: string;
+  status: RequestStatus;
+  reason: string;
+  comment?: string;
+  newEventTitle: string;
+  newEventStart: string;
+  newEventEnd: string;
+  createdAt: string;
+  requestedBy: { name: string; email: string };
+  event: Event;
+}
