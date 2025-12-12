@@ -11,6 +11,7 @@ const NAV_ITEMS = [
     { href: '/admin/calendar', icon: '🗓', label: 'Common Calendar' },
     { href: '/admin/requests', icon: '📨', label: 'Requests', badge: true },
     { href: '/admin/halls', icon: '🏢', label: 'Halls' },
+    { href: '/admin/profile', icon: '👤', label: 'My Profile' },
 ];
 
 const SUPER_ADMIN_ITEMS = [
