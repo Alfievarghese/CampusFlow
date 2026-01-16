@@ -15,3 +15,12 @@ All notable changes to CampusFlow are documented here.
 - Supabase PostgreSQL via Prisma ORM
 - JWT authentication with bcrypt
 - Vercel deployment configuration
+
+
+## [Unreleased]
+
+### Planned
+- Email notifications for RSVP confirmations
+- CSV export for audit logs
+- Dark/light mode toggle for public pages
+- Event capacity soft limits with waitlist
