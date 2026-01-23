@@ -183,3 +183,9 @@ async function checkRecurringConflicts(hallId, firstStart, firstEnd, recurrenceR
 }
 
 module.exports = { checkConflicts, checkRecurringConflicts, timesOverlap, expandRecurringEvent };
+
+
+/**
+ * Performance: For high-volume deployments, add a DB index on (hallId, startTime, endTime).
+ * This speeds up conflict queries significantly.
+ */
