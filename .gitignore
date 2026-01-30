@@ -45,3 +45,7 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+
+# Scripts output
+scripts/output/
