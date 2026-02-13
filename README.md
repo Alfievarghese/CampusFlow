@@ -1,3 +1,5 @@
+![License](https://img.shields.io/github/license/Alfievarghese/CampusFlow) ![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen) ![Next.js](https://img.shields.io/badge/Next.js-16-black) ![Supabase](https://img.shields.io/badge/database-Supabase-3ECF8E)
+
 # CampusFlow
 
 > College Event Hosting & Hall Booking Infrastructure Platform
