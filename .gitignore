@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment Variables — NEVER commit these
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Prisma — generated client and local SQLite DB
+node_modules/.prisma/
+prisma/campusflow.db
+prisma/campusflow.db-journal
+prisma/migrations/
+
+# Uploads (user-generated media)
+uploads/*
+!uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Vercel
+.vercel

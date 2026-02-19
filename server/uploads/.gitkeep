@@ -1,0 +1,2 @@
+# This file keeps the uploads directory tracked by Git while ignoring its contents.
+# Event poster uploads will be stored here at runtime.
