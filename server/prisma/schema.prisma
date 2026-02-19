@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         String     @default("ADMIN") // SUPER_ADMIN, ADMIN
+  isApproved   Boolean    @default(false)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  events       Event[]
+  auditLogs    AuditLog[]
+  ConflictRequest ConflictRequest[]
+}
+
+model Hall {
+  id           String   @id @default(uuid())
+  name         String
+  capacity     Int
+  location     String
+  description  String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  events       Event[]
+}
+
+model Event {
+  id                 String    @id @default(uuid())
+  title              String
+  description        String
+  startTime          DateTime
+  endTime            DateTime
+  hallId             String
+  hall               Hall      @relation(fields: [hallId], references: [id])
+  status             String    @default("CONFIRMED") // CONFIRMED, PENDING, CANCELLED, CONFLICT_REQUESTED
+  category           String
+  inviteType         String    @default("PUBLIC") // PUBLIC, INVITE_ONLY
+  expectedAttendance Int
+  posterUrl          String?
+  recurrenceRule     String?   // JSON: {type:"WEEKLY"|"MONTHLY"|"CUSTOM", interval:1, until:"date", days:[...]}
+  createdBy          String
+  creator            User      @relation(fields: [createdBy], references: [id])
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  conflictRequests   ConflictRequest[]
+  rsvps              RSVP[]
+  inviteRequests     InviteRequest[]
+}
+
+model ConflictRequest {
+  id              String   @id @default(uuid())
+  conflictEventId String   // The existing event that this request conflicts with
+  event           Event    @relation(fields: [conflictEventId], references: [id])
+  requestedById   String
+  requestedBy     User     @relation(fields: [requestedById], references: [id])
+  newEventTitle   String   // Title of the new event requesting the slot
+  newEventStart   DateTime
+  newEventEnd     DateTime
+  hallId          String
+  reason          String
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  comment         String?
+  createdAt       DateTime @default(now())
+}
+
+model RSVP {
+  id             String   @id @default(uuid())
+  eventId        String
+  event          Event    @relation(fields: [eventId], references: [id])
+  userIdentifier String   // Email
+  userName       String
+  status         String   // INTERESTED, GOING
+  createdAt      DateTime @default(now())
+
+  @@unique([eventId, userIdentifier])
+}
+
+model InviteRequest {
+  id            String   @id @default(uuid())
+  eventId       String
+  event         Event    @relation(fields: [eventId], references: [id])
+  requesterName String
+  requesterEmail String
+  requesterInfo String?  // Additional notes
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  comment       String?
+  createdAt     DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  targetId  String?
+  details   String?  // JSON extra details
+  timestamp DateTime @default(now())
+}
+
+model SystemSettings {
+  id                     String  @id @default("singleton")
+  registrationEnabled    Boolean @default(true)
+  maxAdmins              Int     @default(20)
+  updatedAt              DateTime @updatedAt
+}
