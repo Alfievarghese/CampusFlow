@@ -111,4 +111,31 @@ router.get('/me', authenticate, async (req, res) => {
     });
 });
 
+// PUT /api/auth/profile - Update own name/password
+router.put('/profile', authenticate, async (req, res) => {
+    const { name, password } = req.body;
+    if (!name && !password) {
+        return res.status(400).json({ error: 'Provide name or password to update.' });
+    }
+
+    const data = {};
+    if (name && name.trim()) data.name = name.trim();
+    if (password) {
+        if (password.length < 8) {
+            return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+        }
+        data.passwordHash = await bcrypt.hash(password, 12);
+    }
+
+    const updated = await prisma.user.update({
+        where: { id: req.user.id },
+        data,
+        select: { id: true, name: true, email: true, role: true },
+    });
+
+    await auditLog(req.user.id, 'PROFILE_UPDATED', req.user.id, { fields: Object.keys(data) });
+
+    res.json(updated);
+});
+
 module.exports = router;
