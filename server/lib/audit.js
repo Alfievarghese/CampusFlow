@@ -1,14 +1,13 @@
-const prisma = require('../lib/prisma');
+const supabase = require('../lib/supabase');
 
 async function auditLog(userId, action, targetId = null, details = null) {
     try {
-        await prisma.auditLog.create({
-            data: {
-                userId,
-                action,
-                targetId,
-                details: details ? JSON.stringify(details) : null,
-            },
+        await supabase.from('AuditLog').insert({
+            userId,
+            action,
+            targetId,
+            details: details ? JSON.stringify(details) : null,
+            timestamp: new Date().toISOString(),
         });
     } catch (err) {
         console.error('[AUDIT LOG ERROR]', err.message);
@@ -16,6 +15,5 @@ async function auditLog(userId, action, targetId = null, details = null) {
 }
 
 module.exports = { auditLog };
-
 
 // Audit log entries are immutable. Never add DELETE routes for audit logs.
