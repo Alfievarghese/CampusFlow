@@ -249,6 +249,10 @@ kbd {
   border: 1px solid rgba(190, 242, 100, 0.2);
 }
 
+.sidebar-link svg {
+  flex-shrink: 0;
+}
+
 .sidebar-link-badge {
   margin-left: auto;
   background: var(--rose);
@@ -258,6 +262,7 @@ kbd {
   padding: 0.1rem 0.4rem;
   border-radius: 99px;
   font-weight: 500;
+
 }
 
 .sidebar-footer {
@@ -1155,9 +1160,15 @@ kbd {
   animation: shimmerMove 1.5s infinite;
   border-radius: var(--radius);
 }
+
 @keyframes shimmerMove {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 
@@ -1171,7 +1182,10 @@ kbd {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
@@ -1180,12 +1194,17 @@ kbd {
 
 /* Page content fade-in */
 @media (prefers-reduced-motion: no-preference) {
-  .admin-main > * { animation: fadeIn 0.25s ease both; }
+  .admin-main>* {
+    animation: fadeIn 0.25s ease both;
+  }
 }
 
 
 /* Tooltip utility */
-[data-tooltip] { position: relative; }
+[data-tooltip] {
+  position: relative;
+}
+
 [data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -1203,17 +1222,64 @@ kbd {
   transition: opacity 0.2s;
   z-index: 200;
 }
-[data-tooltip]:hover::after { opacity: 1; }
+
+[data-tooltip]:hover::after {
+  opacity: 1;
+}
 
 
 /* Print styles */
 @media print {
-  .sidebar, .btn, nav { display: none !important; }
-  .admin-main { margin-left: 0 !important; }
-  body { background: white; color: black; }
+
+  .sidebar,
+  .btn,
+  nav {
+    display: none !important;
+  }
+
+  .admin-main {
+    margin-left: 0 !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
 }
 
 
 /* Hall status badge */
-.badge-active { background: rgba(190,242,100,0.15); color: var(--lime); border: 1px solid rgba(190,242,100,0.25); }
-.badge-inactive { background: rgba(255,107,107,0.1); color: var(--rose); }
+.badge-active {
+  background: rgba(190, 242, 100, 0.15);
+  color: var(--lime);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+}
+
+.badge-inactive {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--rose);
+}
+/* Theme toggle button in sidebar footer */
+.sidebar-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-family: var(--font-body);
+  letter-spacing: 0;
+}
+.sidebar-theme-toggle:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+}
+.sidebar-theme-toggle svg { flex-shrink: 0; }
