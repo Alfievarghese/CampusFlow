@@ -1,13 +1,12 @@
 const express = require('express');
-const prisma = require('../lib/prisma');
+const supabase = require('../lib/supabase');
 const { auditLog } = require('../lib/audit');
 
 const router = express.Router();
 
-// POST /api/rsvp - RSVP to an event (public)
+// POST /api/rsvp
 router.post('/', async (req, res) => {
     const { eventId, userIdentifier, userName, status } = req.body;
-
     if (!eventId || !userIdentifier || !userName || !status) {
         return res.status(400).json({ error: 'eventId, userIdentifier, userName, status are required.' });
     }
@@ -15,53 +14,48 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ error: 'Status must be INTERESTED or GOING.' });
     }
 
-    const event = await prisma.event.findUnique({
-        where: { id: eventId },
-        include: { hall: true },
-    });
+    const { data: event } = await supabase.from('Event').select('*, hall:Hall(capacity)').eq('id', eventId).single();
     if (!event) return res.status(404).json({ error: 'Event not found.' });
     if (event.status === 'CANCELLED') return res.status(400).json({ error: 'Cannot RSVP to a cancelled event.' });
+
     if (event.inviteType === 'INVITE_ONLY') {
-        // Check if they have an approved invite
-        const invite = await prisma.inviteRequest.findFirst({
-            where: { eventId, requesterEmail: userIdentifier, status: 'APPROVED' },
-        });
-        if (!invite) {
-            return res.status(403).json({ error: 'This event is invite-only. Request an invite first.' });
-        }
+        const { data: invite } = await supabase.from('InviteRequest')
+            .select('id').eq('eventId', eventId).eq('requesterEmail', userIdentifier).eq('status', 'APPROVED').single();
+        if (!invite) return res.status(403).json({ error: 'This event is invite-only. Request an invite first.' });
     }
 
     // Upsert RSVP
-    const rsvp = await prisma.rSVP.upsert({
-        where: { eventId_userIdentifier: { eventId, userIdentifier } },
-        update: { status, userName },
-        create: { eventId, userIdentifier, userName, status },
-    });
-
-    // Check capacity
-    const going = await prisma.rSVP.count({ where: { eventId, status: 'GOING' } });
-    let capacityWarning = null;
-    if (going > event.hall.capacity) {
-        capacityWarning = `Event is over capacity (${going}/${event.hall.capacity} going).`;
+    const { data: existing } = await supabase.from('RSVP').select('id').eq('eventId', eventId).eq('userIdentifier', userIdentifier).single();
+    let rsvp;
+    if (existing) {
+        const r = await supabase.from('RSVP').update({ status, userName }).eq('id', existing.id).select().single();
+        rsvp = r.data;
+    } else {
+        const r = await supabase.from('RSVP').insert({ eventId, userIdentifier, userName, status, createdAt: new Date().toISOString() }).select().single();
+        rsvp = r.data;
     }
 
-    res.json({ rsvp, going, interested: await prisma.rSVP.count({ where: { eventId, status: 'INTERESTED' } }), capacityWarning });
+    const { count: going } = await supabase.from('RSVP').select('id', { count: 'exact', head: true }).eq('eventId', eventId).eq('status', 'GOING');
+    const { count: interested } = await supabase.from('RSVP').select('id', { count: 'exact', head: true }).eq('eventId', eventId).eq('status', 'INTERESTED');
+    const capacityWarning = (going ?? 0) > (event.hall?.capacity ?? 9999) ? `Event is over capacity (${going}/${event.hall?.capacity} going).` : null;
+
+    res.json({ rsvp, going, interested, capacityWarning });
 });
 
-// GET /api/rsvp/:eventId - Get RSVP counts for an event
+// GET /api/rsvp/:eventId
 router.get('/:eventId', async (req, res) => {
     const { eventId } = req.params;
-    const [going, interested] = await Promise.all([
-        prisma.rSVP.count({ where: { eventId, status: 'GOING' } }),
-        prisma.rSVP.count({ where: { eventId, status: 'INTERESTED' } }),
+    const [{ count: going }, { count: interested }] = await Promise.all([
+        supabase.from('RSVP').select('id', { count: 'exact', head: true }).eq('eventId', eventId).eq('status', 'GOING'),
+        supabase.from('RSVP').select('id', { count: 'exact', head: true }).eq('eventId', eventId).eq('status', 'INTERESTED'),
     ]);
     res.json({ going, interested });
 });
 
-// DELETE /api/rsvp - Cancel RSVP
+// DELETE /api/rsvp
 router.delete('/', async (req, res) => {
     const { eventId, userIdentifier } = req.body;
-    await prisma.rSVP.deleteMany({ where: { eventId, userIdentifier } });
+    await supabase.from('RSVP').delete().eq('eventId', eventId).eq('userIdentifier', userIdentifier);
     res.json({ message: 'RSVP cancelled.' });
 });
 

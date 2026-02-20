@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const prisma = require('../lib/prisma');
+const supabase = require('../lib/supabase');
 const { auditLog } = require('../lib/audit');
 const { authenticate } = require('../middleware/auth.middleware');
 
@@ -19,12 +19,12 @@ router.post('/register', async (req, res) => {
     }
 
     // Check if registration is enabled
-    const settings = await prisma.systemSettings.findUnique({ where: { id: 'singleton' } });
+    const { data: settings } = await supabase.from('SystemSettings').select('*').eq('id', 'singleton').single();
     if (settings && !settings.registrationEnabled) {
         return res.status(403).json({ error: 'Admin registration is currently disabled.' });
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } });
+    const { data: existing } = await supabase.from('User').select('id').eq('email', email).single();
     if (existing) {
         return res.status(409).json({ error: 'Email already in use.' });
     }
@@ -32,18 +32,23 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 12);
 
     // First ever user becomes Super Admin (auto-approved)
-    const userCount = await prisma.user.count();
-    const isSuperAdmin = userCount === 0;
+    const { count } = await supabase.from('User').select('id', { count: 'exact', head: true });
+    const isSuperAdmin = (count ?? 0) === 0;
 
-    const user = await prisma.user.create({
-        data: {
-            name,
-            email,
-            passwordHash,
-            role: isSuperAdmin ? 'SUPER_ADMIN' : 'ADMIN',
-            isApproved: isSuperAdmin, // Super admin is auto-approved
-        },
-    });
+    const { data: user, error } = await supabase.from('User').insert({
+        name,
+        email,
+        passwordHash,
+        role: isSuperAdmin ? 'SUPER_ADMIN' : 'ADMIN',
+        isApproved: isSuperAdmin,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+    }).select('id, name, email, role, isApproved').single();
+
+    if (error) {
+        console.error('[REGISTER ERROR]', error);
+        return res.status(500).json({ error: 'Registration failed.' });
+    }
 
     await auditLog(user.id, 'USER_REGISTERED', user.id, { email, role: user.role });
 
@@ -64,8 +69,8 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ error: 'Email and password are required.' });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.isActive) {
+    const { data: user, error } = await supabase.from('User').select('*').eq('email', email).single();
+    if (error || !user || !user.isActive) {
         return res.status(401).json({ error: 'Invalid credentials.' });
     }
 
@@ -118,22 +123,25 @@ router.put('/profile', authenticate, async (req, res) => {
         return res.status(400).json({ error: 'Provide name or password to update.' });
     }
 
-    const data = {};
-    if (name && name.trim()) data.name = name.trim();
+    const updateData = {};
+    if (name && name.trim()) updateData.name = name.trim();
     if (password) {
         if (password.length < 8) {
             return res.status(400).json({ error: 'Password must be at least 8 characters.' });
         }
-        data.passwordHash = await bcrypt.hash(password, 12);
+        updateData.passwordHash = await bcrypt.hash(password, 12);
     }
 
-    const updated = await prisma.user.update({
-        where: { id: req.user.id },
-        data,
-        select: { id: true, name: true, email: true, role: true },
-    });
+    const { data: updated, error } = await supabase
+        .from('User')
+        .update(updateData)
+        .eq('id', req.user.id)
+        .select('id, name, email, role')
+        .single();
 
-    await auditLog(req.user.id, 'PROFILE_UPDATED', req.user.id, { fields: Object.keys(data) });
+    if (error) return res.status(500).json({ error: 'Update failed.' });
+
+    await auditLog(req.user.id, 'PROFILE_UPDATED', req.user.id, { fields: Object.keys(updateData) });
 
     res.json(updated);
 });

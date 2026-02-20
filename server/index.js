@@ -1,3 +1,5 @@
+require('dotenv').config({ override: true });
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -13,7 +15,7 @@ const inviteRoutes = require('./routes/invite.routes');
 const adminRoutes = require('./routes/admin.routes');
 const auditRoutes = require('./routes/audit.routes');
 
-require('dotenv').config();
+
 
 const app = express();
 
