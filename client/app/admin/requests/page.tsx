@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { InboxIcon, SendHorizontal, CheckCircle2, XCircle, RotateCcw, MessageSquare, X } from 'lucide-react';
+import { InboxIcon, SendHorizontal, CheckCircle2, XCircle, RotateCcw, MessageSquare } from 'lucide-react';
 
 interface ConflictReq {
     id: string; status: string; reason: string; comment?: string;
@@ -10,15 +10,12 @@ interface ConflictReq {
     requestedBy: { name: string; email: string };
     event: { id: string; title: string; startTime: string; endTime: string; hall: { name: string }; creator: { name: string; email: string }; };
 }
-interface InviteReq {
-    id: string; status: string; requesterName: string; requesterEmail: string;
-    requesterInfo?: string; createdAt: string; event: { id: string; title: string };
-}
+
 
 function formatDT(d: string) { return new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
 
 export default function RequestsPage() {
-    const { user } = useAuth();
+    useAuth();
     const [conflicts, setConflicts] = useState<ConflictReq[]>([]);
     const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>('incoming');
     const [outgoing, setOutgoing] = useState<ConflictReq[]>([]);
