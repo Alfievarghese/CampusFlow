@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const prisma = require('../lib/prisma');
 const { authenticate, requireAdmin, requireSuperAdmin } = require('../middleware/auth.middleware');
 const { auditLog } = require('../lib/audit');
@@ -12,6 +13,36 @@ router.get('/users', authenticate, requireAdmin, requireSuperAdmin, async (req, 
         orderBy: { createdAt: 'desc' },
     });
     res.json(users);
+});
+
+// POST /api/admin/users - Manually create an admin (Super Admin only, pre-approved)
+router.post('/users', authenticate, requireAdmin, requireSuperAdmin, async (req, res) => {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ error: 'Name, email, and password are required.' });
+    }
+    if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+    }
+    const allowedRoles = ['ADMIN', 'SUPER_ADMIN'];
+    const assignedRole = allowedRoles.includes(role) ? role : 'ADMIN';
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+        return res.status(409).json({ error: 'An account with this email already exists.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const user = await prisma.user.create({
+        data: { name, email, passwordHash, role: assignedRole, isApproved: true, isActive: true },
+        select: { id: true, name: true, email: true, role: true, isApproved: true, isActive: true, createdAt: true },
+    });
+
+    await auditLog(req.user.id, 'ADMIN_CREATED_MANUALLY', user.id, { name, email, role: assignedRole });
+
+    res.status(201).json(user);
 });
 
 // PATCH /api/admin/users/:id/approve - Approve admin
