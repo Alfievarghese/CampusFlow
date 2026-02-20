@@ -1,19 +1,19 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import api from '@/lib/api';
-import { useState } from 'react';
+import { CalendarDays, Clock, Building2, User, X } from 'lucide-react';
 
 interface CalEvent {
     id: string;
     title: string;
     start: string;
     end: string;
-    className: string;
+    classNames: string[];
     extendedProps: { hall: string; host: string; status: string; category: string; };
 }
 
@@ -25,6 +25,7 @@ export default function CalendarPage() {
 
     useEffect(() => {
         loadEvents();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [view]);
 
     const loadEvents = async () => {
@@ -36,7 +37,7 @@ export default function CalendarPage() {
                 title: e.title,
                 start: e.startTime,
                 end: e.endTime,
-                className: `event-${e.status.toLowerCase().replace('_', '-')}`,
+                classNames: [`event-${e.status.toLowerCase().replace('_', '-')}`],
                 extendedProps: { hall: e.hall.name, host: e.creator.name, status: e.status, category: e.category },
             }));
             setEvents(mapped);
@@ -79,7 +80,6 @@ export default function CalendarPage() {
                     height={680}
                     eventClick={(info) => setSelected(info.event)}
                     dateClick={(info) => router.push(`/admin/events/new?date=${info.dateStr}`)}
-                    eventClassNames={(info) => [info.event.className]}
                 />
             </div>
 
@@ -89,7 +89,7 @@ export default function CalendarPage() {
                     <div className="modal" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
                             <h3>{selected.title}</h3>
-                            <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}>✕</button>
+                            <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}><X size={16} /></button>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -97,10 +97,22 @@ export default function CalendarPage() {
                                 <span className="badge badge-confirmed">{selected.extendedProps.category}</span>
                             </div>
                             <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                <div>📅 Start: <strong>{new Date(selected.start).toLocaleString()}</strong></div>
-                                <div>🕐 End: <strong>{new Date(selected.end).toLocaleString()}</strong></div>
-                                <div>🏢 Hall: <strong>{selected.extendedProps.hall}</strong></div>
-                                <div>👤 Host: <strong>{selected.extendedProps.host}</strong></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <CalendarDays size={14} strokeWidth={1.75} />
+                                    Start: <strong>{new Date(selected.start).toLocaleString()}</strong>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <Clock size={14} strokeWidth={1.75} />
+                                    End: <strong>{new Date(selected.end).toLocaleString()}</strong>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <Building2 size={14} strokeWidth={1.75} />
+                                    Hall: <strong>{selected.extendedProps.hall}</strong>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <User size={14} strokeWidth={1.75} />
+                                    Host: <strong>{selected.extendedProps.host}</strong>
+                                </div>
                             </div>
                         </div>
                     </div>
