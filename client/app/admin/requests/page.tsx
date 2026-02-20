@@ -2,29 +2,20 @@
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { InboxIcon, SendHorizontal, CheckCircle2, XCircle, RotateCcw, MessageSquare, X } from 'lucide-react';
 
 interface ConflictReq {
-    id: string;
-    status: string;
-    reason: string;
-    comment?: string;
-    newEventTitle: string;
-    newEventStart: string;
-    newEventEnd: string;
-    createdAt: string;
+    id: string; status: string; reason: string; comment?: string;
+    newEventTitle: string; newEventStart: string; newEventEnd: string; createdAt: string;
     requestedBy: { name: string; email: string };
     event: { id: string; title: string; startTime: string; endTime: string; hall: { name: string }; creator: { name: string; email: string }; };
 }
-
 interface InviteReq {
-    id: string;
-    status: string;
-    requesterName: string;
-    requesterEmail: string;
-    requesterInfo?: string;
-    createdAt: string;
-    event: { id: string; title: string };
+    id: string; status: string; requesterName: string; requesterEmail: string;
+    requesterInfo?: string; createdAt: string; event: { id: string; title: string };
 }
+
+function formatDT(d: string) { return new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
 
 export default function RequestsPage() {
     const { user } = useAuth();
@@ -61,7 +52,7 @@ export default function RequestsPage() {
         } catch (e: any) { setMsg(e.response?.data?.error || 'Error'); }
     };
 
-    const formatDT = (d: string) => new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const pendingCount = conflicts.filter(r => r.status === 'PENDING').length;
 
     return (
         <div>
@@ -76,12 +67,20 @@ export default function RequestsPage() {
 
             {/* Tabs */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                <button className={`btn ${activeTab === 'incoming' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
-                    onClick={() => setActiveTab('incoming')}>
-                    Incoming {conflicts.filter(r => r.status === 'PENDING').length > 0 && `(${conflicts.filter(r => r.status === 'PENDING').length})`}
+                <button
+                    className={`btn ${activeTab === 'incoming' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                    onClick={() => setActiveTab('incoming')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                    <InboxIcon size={14} strokeWidth={1.75} />
+                    Incoming {pendingCount > 0 && <span className="sidebar-link-badge" style={{ position: 'static' }}>{pendingCount}</span>}
                 </button>
-                <button className={`btn ${activeTab === 'outgoing' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
-                    onClick={() => setActiveTab('outgoing')}>
+                <button
+                    className={`btn ${activeTab === 'outgoing' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                    onClick={() => setActiveTab('outgoing')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                    <SendHorizontal size={14} strokeWidth={1.75} />
                     My Requests
                 </button>
             </div>
@@ -92,7 +91,7 @@ export default function RequestsPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {conflicts.length === 0 ? (
                         <div className="card" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📭</div>
+                            <InboxIcon size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
                             <p>No incoming conflict requests.</p>
                         </div>
                     ) : conflicts.map(req => (
@@ -104,7 +103,7 @@ export default function RequestsPage() {
                                     </div>
                                     <span className={`badge badge-${req.status.toLowerCase()}`}>{req.status}</span>
                                 </div>
-                                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                                     {formatDT(req.createdAt)}
                                 </span>
                             </div>
@@ -133,13 +132,21 @@ export default function RequestsPage() {
                                 responding?.id === req.id ? (
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                         <div className="form-group">
-                                            <label className="form-label">Optional comment</label>
+                                            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                <MessageSquare size={13} /> Optional comment
+                                            </label>
                                             <textarea className="form-textarea" rows={2} value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a note..." />
                                         </div>
                                         <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                            <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => respondConflict(req.id, 'APPROVED')}>✓ Approve (Cancel My Event)</button>
-                                            <button className="btn btn-danger" style={{ flex: 1 }} onClick={() => respondConflict(req.id, 'REJECTED')}>✕ Reject</button>
-                                            <button className="btn btn-ghost" onClick={() => setResponding(null)}>Back</button>
+                                            <button className="btn btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }} onClick={() => respondConflict(req.id, 'APPROVED')}>
+                                                <CheckCircle2 size={15} /> Approve (Cancel My Event)
+                                            </button>
+                                            <button className="btn btn-danger" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }} onClick={() => respondConflict(req.id, 'REJECTED')}>
+                                                <XCircle size={15} /> Reject
+                                            </button>
+                                            <button className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} onClick={() => setResponding(null)}>
+                                                <RotateCcw size={14} /> Back
+                                            </button>
                                         </div>
                                     </div>
                                 ) : (
@@ -158,11 +165,10 @@ export default function RequestsPage() {
                     ))}
                 </div>
             ) : (
-                // Outgoing requests
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {outgoing.length === 0 ? (
                         <div className="card" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📤</div>
+                            <SendHorizontal size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
                             <p>You haven't submitted any override requests.</p>
                         </div>
                     ) : outgoing.map(req => (
