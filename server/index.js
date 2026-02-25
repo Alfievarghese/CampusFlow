@@ -1,4 +1,5 @@
 require('dotenv').config({ override: true });
+require('express-async-errors'); // Makes Express v4 handle async errors correctly
 
 const express = require('express');
 const cors = require('cors');
