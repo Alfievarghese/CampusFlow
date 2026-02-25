@@ -19,6 +19,9 @@ const auditRoutes = require('./routes/audit.routes');
 
 const app = express();
 
+// Trust proxy — required for express-rate-limit behind Vercel/reverse proxies
+app.set('trust proxy', 1);
+
 // CORS
 const allowedOrigins = [
   'http://localhost:3000',
@@ -50,7 +53,10 @@ if (process.env.NODE_ENV !== 'test') {
 // Rate limiting on auth routes
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,
+  max: 50,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => !req.ip,
   message: { error: 'Too many requests. Please try again later.' },
 });
 
