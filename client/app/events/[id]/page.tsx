@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { CalendarDays, Building2, User, Users } from 'lucide-react';
 
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -29,10 +30,10 @@ export default function EventDetailPage() {
         <p style={{ color: 'var(--text-secondary)', marginTop: '1rem', lineHeight: 1.7 }}>{event.description}</p>
         <div className="card" style={{ marginTop: '2rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            <div>📅 {new Date(event.startTime).toLocaleString('en-IN')}</div>
-            <div>🏢 {event.hall?.name} — {event.hall?.location}</div>
-            <div>👤 Hosted by {event.creator?.name}</div>
-            <div>👥 {event._count?.rsvps || 0} RSVPs</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><CalendarDays size={15} /> {new Date(event.startTime).toLocaleString('en-IN')}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Building2 size={15} /> {event.hall?.name} — {event.hall?.location}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><User size={15} /> Hosted by {event.creator?.name}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Users size={15} /> {event._count?.rsvps || 0} RSVPs</div>
           </div>
         </div>
       </div>

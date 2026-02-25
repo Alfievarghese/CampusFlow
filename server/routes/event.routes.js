@@ -94,6 +94,7 @@ router.post('/', authenticate, requireAdmin, upload.single('poster'), async (req
     const posterUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
     const { data: event, error } = await supabase.from('Event').insert({
+        id: uuidv4(),
         title,
         description: description || '',
         startTime: start.toISOString(),

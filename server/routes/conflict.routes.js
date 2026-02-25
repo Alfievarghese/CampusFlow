@@ -1,5 +1,6 @@
 const express = require('express');
 const supabase = require('../lib/supabase');
+const { v4: uuidv4 } = require('uuid');
 const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
 const { checkConflicts } = require('../lib/conflictEngine');
 const { auditLog } = require('../lib/audit');
@@ -25,7 +26,7 @@ router.post('/request-override', authenticate, requireAdmin, async (req, res) =>
     if (!conflictEvent) return res.status(404).json({ error: 'Conflicting event not found.' });
 
     const { data: request, error } = await supabase.from('ConflictRequest').insert({
-        conflictEventId, requestedById: req.user.id, newEventTitle,
+        id: uuidv4(), conflictEventId, requestedById: req.user.id, newEventTitle,
         newEventStart: new Date(newEventStart).toISOString(),
         newEventEnd: new Date(newEventEnd).toISOString(),
         hallId, reason, status: 'PENDING', createdAt: new Date().toISOString(),

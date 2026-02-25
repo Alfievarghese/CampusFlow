@@ -1,5 +1,6 @@
 const express = require('express');
 const supabase = require('../lib/supabase');
+const { v4: uuidv4 } = require('uuid');
 const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
 const { auditLog } = require('../lib/audit');
 
@@ -19,7 +20,7 @@ router.post('/request', async (req, res) => {
     if (existing) return res.status(409).json({ error: 'You have already submitted an invite request.', status: existing.status });
 
     const { data: request, error } = await supabase.from('InviteRequest').insert({
-        eventId, requesterName, requesterEmail, requesterInfo: requesterInfo || null, status: 'PENDING', createdAt: new Date().toISOString(),
+        id: uuidv4(), eventId, requesterName, requesterEmail, requesterInfo: requesterInfo || null, status: 'PENDING', createdAt: new Date().toISOString(),
     }).select().single();
     if (error) return res.status(500).json({ error: error.message });
 
