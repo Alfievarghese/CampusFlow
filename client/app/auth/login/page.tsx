@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Building2, CalendarCheck, BarChart3, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -119,7 +120,7 @@ export default function LoginPage() {
                     textAlign: 'center',
                     maxWidth: '380px',
                 }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏛️</div>
+                    <Building2 size={60} strokeWidth={1} style={{ color: 'var(--lime)', marginBottom: '1rem', opacity: 0.8 }} />
                     <h3 style={{ marginBottom: '1rem', fontFamily: 'var(--font-display)', fontSize: '1.8rem' }}>
                         Manage Your Campus.<br />Effortlessly.
                     </h3>
@@ -127,8 +128,13 @@ export default function LoginPage() {
                         Book halls, schedule events, handle conflicts — all in one secure, role-based platform.
                     </p>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap' }}>
-                        {['🗓 Events', '🏢 Halls', '📊 Analytics', '🔐 Secure'].map(tag => (
-                            <span key={tag} className="badge badge-confirmed">{tag}</span>
+                        {[
+                            { icon: CalendarCheck, label: 'Events' },
+                            { icon: Building2, label: 'Halls' },
+                            { icon: BarChart3, label: 'Analytics' },
+                            { icon: ShieldCheck, label: 'Secure' },
+                        ].map(({ icon: Icon, label }) => (
+                            <span key={label} className="badge badge-confirmed" style={{ gap: '0.3rem' }}><Icon size={11} />{label}</span>
                         ))}
                     </div>
                 </div>

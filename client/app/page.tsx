@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { CalendarDays, Clock, MapPin, User, Users, Globe, Lock } from 'lucide-react';
 
 interface Event {
   id: string;
@@ -132,7 +133,7 @@ export default function HomePage() {
             </div>
           ) : events.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '5rem 1rem', color: 'var(--text-muted)' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📅</div>
+              <CalendarDays size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.4, display: 'block' }} />
               <h3 style={{ fontFamily: 'var(--font-display)', marginBottom: '0.5rem' }}>No Events Found</h3>
               <p>Check back later or try a different filter.</p>
             </div>
@@ -191,7 +192,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
   return (
     <div className={`event-card anim-slide-up anim-delay-${Math.min(index + 1, 5)}`}>
       {event.posterUrl ? (
-        <img src={`http://localhost:5000${event.posterUrl}`} alt={event.title} className="event-card-img" />
+        <img src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || ''}${event.posterUrl}`} alt={event.title} className="event-card-img" />
       ) : (
         <div className="event-card-img-placeholder">
           {event.category[0]}
@@ -200,8 +201,8 @@ function EventCard({ event, index }: { event: Event; index: number }) {
       <div className="event-card-body">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span className="event-card-category">{event.category}</span>
-          <span className={`badge ${event.inviteType === 'PUBLIC' ? 'badge-public' : 'badge-invite'}`}>
-            {event.inviteType === 'PUBLIC' ? '🌐 Public' : '🔒 Invite Only'}
+          <span className={`badge ${event.inviteType === 'PUBLIC' ? 'badge-public' : 'badge-invite'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            {event.inviteType === 'PUBLIC' ? <><Globe size={11} /> Public</> : <><Lock size={11} /> Invite Only</>}
           </span>
         </div>
         <div className="event-card-title">{event.title}</div>
@@ -209,19 +210,19 @@ function EventCard({ event, index }: { event: Event; index: number }) {
         <div className="divider" />
         <div className="event-card-meta">
           <div className="event-card-detail">
-            <span>📅</span>{formatDate(event.startTime)}
+            <CalendarDays size={13} />{formatDate(event.startTime)}
           </div>
           <div className="event-card-detail">
-            <span>🕐</span>{formatTime(event.startTime)} – {formatTime(event.endTime)}
+            <Clock size={13} />{formatTime(event.startTime)} – {formatTime(event.endTime)}
           </div>
           <div className="event-card-detail">
-            <span>📍</span>{event.hall.name}
+            <MapPin size={13} />{event.hall.name}
           </div>
           <div className="event-card-detail">
-            <span>👤</span>{event.creator.name}
+            <User size={13} />{event.creator.name}
           </div>
           <div className="event-card-detail">
-            <span>👥</span>{event._count.rsvps} RSVPs
+            <Users size={13} />{event._count.rsvps} RSVPs
           </div>
         </div>
         <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
@@ -231,7 +232,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
             </button>
           ) : (
             <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => { setShowInviteReq(!showInviteReq); setMsg(''); }}>
-              {showInviteReq ? 'Cancel' : '🔒 Request Invite'}
+              {showInviteReq ? 'Cancel' : <><Lock size={12} style={{ marginRight: 4 }} />Request Invite</>}
             </button>
           )}
         </div>
