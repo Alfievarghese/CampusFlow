@@ -93,6 +93,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Scrollbar */
@@ -1259,6 +1260,7 @@ kbd {
   background: rgba(255, 107, 107, 0.1);
   color: var(--rose);
 }
+
 /* Theme toggle button in sidebar footer */
 .sidebar-theme-toggle {
   display: flex;
@@ -1277,9 +1279,13 @@ kbd {
   font-family: var(--font-body);
   letter-spacing: 0;
 }
+
 .sidebar-theme-toggle:hover {
   background: var(--surface-2);
   color: var(--text-primary);
   border-color: var(--border-bright);
 }
-.sidebar-theme-toggle svg { flex-shrink: 0; }
+
+.sidebar-theme-toggle svg {
+  flex-shrink: 0;
+}

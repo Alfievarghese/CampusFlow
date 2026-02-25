@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { Plus, AlertTriangle } from 'lucide-react';
 
 interface Hall { id: string; name: string; capacity: number; location: string; }
 interface ConflictEvent { id: string; title: string; startTime: string; endTime: string; hall: string; host: string; }
@@ -190,8 +191,8 @@ export default function NewEventPage() {
                                     <div className="form-group">
                                         <label className="form-label">Visibility</label>
                                         <select className="form-select" value={form.inviteType} onChange={e => f('inviteType', e.target.value)}>
-                                            <option value="PUBLIC">🌐 Public</option>
-                                            <option value="INVITE_ONLY">🔒 Invite Only</option>
+                                            <option value="PUBLIC">Public (Open to All)</option>
+                                            <option value="INVITE_ONLY">Invite Only</option>
                                         </select>
                                     </div>
                                 </div>
@@ -265,7 +266,7 @@ export default function NewEventPage() {
                                     <label className="form-label">Expected Attendance</label>
                                     <input className="form-input" type="number" min={0} placeholder="0" value={form.expectedAttendance} onChange={e => f('expectedAttendance', e.target.value)} />
                                     {selectedHall && parseInt(form.expectedAttendance) > selectedHall.capacity && (
-                                        <span className="form-error">⚠ Exceeds hall capacity of {selectedHall.capacity}!</span>
+                                        <span className="form-error" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><AlertTriangle size={12} /> Exceeds hall capacity of {selectedHall.capacity}!</span>
                                     )}
                                 </div>
                             </div>
@@ -277,7 +278,7 @@ export default function NewEventPage() {
                                     <span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
                                     Checking for conflicts...
                                 </span>
-                            ) : '📅 Create Event'}
+                            ) : <><Plus size={16} strokeWidth={2} /> Create Event</>}
                         </button>
                     </div>
                 </div>
