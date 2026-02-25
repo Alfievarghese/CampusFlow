@@ -19,7 +19,13 @@ export default function LoginPage() {
             await login(form.email, form.password);
             router.push('/admin/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Login failed. Please try again.');
+            const data = err.response?.data;
+            const msg = typeof data?.error === 'string'
+                ? data.error
+                : typeof data?.message === 'string'
+                    ? data.message
+                    : 'Login failed. Please try again.';
+            setError(msg);
         }
         setLoading(false);
     };
