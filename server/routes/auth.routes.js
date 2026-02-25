@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 const supabase = require('../lib/supabase');
 const { auditLog } = require('../lib/audit');
 const { authenticate } = require('../middleware/auth.middleware');
@@ -36,6 +37,7 @@ router.post('/register', async (req, res) => {
     const isSuperAdmin = (count ?? 0) === 0;
 
     const { data: user, error } = await supabase.from('User').insert({
+        id: uuidv4(),
         name,
         email,
         passwordHash,

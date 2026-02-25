@@ -1,5 +1,6 @@
 const express = require('express');
 const supabase = require('../lib/supabase');
+const { v4: uuidv4 } = require('uuid');
 const { auditLog } = require('../lib/audit');
 
 const router = express.Router();
@@ -31,7 +32,7 @@ router.post('/', async (req, res) => {
         const r = await supabase.from('RSVP').update({ status, userName }).eq('id', existing.id).select().single();
         rsvp = r.data;
     } else {
-        const r = await supabase.from('RSVP').insert({ eventId, userIdentifier, userName, status, createdAt: new Date().toISOString() }).select().single();
+        const r = await supabase.from('RSVP').insert({ id: uuidv4(), eventId, userIdentifier, userName, status, createdAt: new Date().toISOString() }).select().single();
         rsvp = r.data;
     }
 

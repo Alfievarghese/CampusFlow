@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 const supabase = require('../lib/supabase');
 const { authenticate, requireAdmin, requireSuperAdmin } = require('../middleware/auth.middleware');
 const { auditLog } = require('../lib/audit');
@@ -28,7 +29,7 @@ router.post('/users', authenticate, requireAdmin, requireSuperAdmin, async (req,
 
     const passwordHash = await bcrypt.hash(password, 12);
     const { data: user, error } = await supabase.from('User').insert({
-        name, email, passwordHash, role: assignedRole, isApproved: true, isActive: true,
+        id: uuidv4(), name, email, passwordHash, role: assignedRole, isApproved: true, isActive: true,
         createdAt: new Date().toISOString(),
     }).select('id, name, email, role, isApproved, isActive, createdAt').single();
 

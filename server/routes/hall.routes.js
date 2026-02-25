@@ -1,5 +1,6 @@
 const express = require('express');
 const supabase = require('../lib/supabase');
+const { v4: uuidv4 } = require('uuid');
 const { authenticate, requireAdmin, requireSuperAdmin } = require('../middleware/auth.middleware');
 const { auditLog } = require('../lib/audit');
 
@@ -24,7 +25,7 @@ router.post('/', authenticate, requireAdmin, requireSuperAdmin, async (req, res)
     const { name, capacity, location, description } = req.body;
     if (!name || !capacity || !location) return res.status(400).json({ error: 'name, capacity, and location are required.' });
     const { data: hall, error } = await supabase.from('Hall').insert({
-        name, capacity: parseInt(capacity), location, description: description || null, isActive: true, createdAt: new Date().toISOString(),
+        id: uuidv4(), name, capacity: parseInt(capacity), location, description: description || null, isActive: true, createdAt: new Date().toISOString(),
     }).select().single();
     if (error) return res.status(500).json({ error: error.message });
     await auditLog(req.user.id, 'HALL_CREATED', hall.id, { name, capacity, location });

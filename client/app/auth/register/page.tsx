@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import api from '@/lib/api';
 import Link from 'next/link';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function RegisterPage() {
     const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
@@ -28,7 +29,7 @@ export default function RegisterPage() {
         return (
             <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--ink)' }}>
                 <div style={{ textAlign: 'center', maxWidth: '440px', padding: '2rem' }}>
-                    <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎉</div>
+                    <CheckCircle2 size={56} strokeWidth={1.25} style={{ color: 'var(--lime)', marginBottom: '1rem' }} />
                     <h2 style={{ marginBottom: '1rem' }}>Registration Submitted!</h2>
                     <div className="alert alert-success" style={{ marginBottom: '1.5rem' }}>{success}</div>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Your account is pending Super Admin approval. You'll be notified once approved.</p>
