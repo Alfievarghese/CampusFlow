@@ -7,7 +7,7 @@ import api from '@/lib/api';
 import {
     LayoutDashboard, CalendarDays, Calendar, Inbox, Building2,
     Users, ClipboardList, Settings, Globe, LogOut, Sun, Moon,
-    UserCircle, ChevronRight,
+    UserCircle, ChevronRight, Menu
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -31,6 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const pathname = usePathname();
     const [pendingCount, setPendingCount] = useState(0);
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     // Load saved theme on mount
     useEffect(() => {
@@ -67,8 +68,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return (
         <div className="admin-layout">
+            {/* Mobile Header */}
+            <div className="mobile-header">
+                <button onClick={() => setSidebarOpen(true)} className="btn btn-ghost" style={{ padding: '0.4rem', color: 'var(--text-primary)' }}>
+                    <Menu size={22} />
+                </button>
+                <div className="mobile-header-title">CampusFlow</div>
+            </div>
+
+            {/* Mobile Sidebar Backdrop */}
+            {sidebarOpen && (
+                <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+            )}
+
             {/* Sidebar */}
-            <aside className="sidebar">
+            <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
                 {/* Logo */}
                 <div className="sidebar-logo">
                     <div className="sidebar-logo-mark">CF</div>
@@ -85,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         const Icon = item.icon;
                         const isActive = pathname === item.href || (item.href !== '/admin/dashboard' && pathname.startsWith(item.href));
                         return (
-                            <Link key={item.href} href={item.href} className={`sidebar-link${isActive ? ' active' : ''}`}>
+                            <Link key={item.href} href={item.href} className={`sidebar-link${isActive ? ' active' : ''}`} onClick={() => setSidebarOpen(false)}>
                                 <Icon size={16} strokeWidth={1.75} />
                                 <span>{item.label}</span>
                                 {item.badge && pendingCount > 0 && (
@@ -103,7 +117,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 const Icon = item.icon;
                                 const isActive = pathname === item.href;
                                 return (
-                                    <Link key={item.href} href={item.href} className={`sidebar-link${isActive ? ' active' : ''}`}>
+                                    <Link key={item.href} href={item.href} className={`sidebar-link${isActive ? ' active' : ''}`} onClick={() => setSidebarOpen(false)}>
                                         <Icon size={16} strokeWidth={1.75} />
                                         <span>{item.label}</span>
                                         {isActive && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}

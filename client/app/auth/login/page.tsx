@@ -113,7 +113,7 @@ export default function LoginPage() {
                 padding: '3rem',
                 position: 'relative',
                 overflow: 'hidden',
-            } as React.CSSProperties} className="hero">
+            } as React.CSSProperties} className="hero login-decorative-panel">
                 <div style={{
                     position: 'relative',
                     zIndex: 1,
