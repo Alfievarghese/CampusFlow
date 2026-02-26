@@ -7,7 +7,7 @@ import { Building2, MapPin, Users, PlusCircle, Pencil, PowerOff, X, Landmark } f
 interface Hall { id: string; name: string; capacity: number; location: string; description?: string; isActive: boolean; }
 
 export default function HallsPage() {
-    const { user } = useAuth();
+    const { } = useAuth();
     const [halls, setHalls] = useState<Hall[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -58,12 +58,10 @@ export default function HallsPage() {
                     <h1 className="page-title">Hall Management</h1>
                     <p className="page-subtitle">View and manage campus halls and venues</p>
                 </div>
-                {user?.role === 'SUPER_ADMIN' && (
-                    <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', capacity: '', location: '', description: '' }); }}>
-                        <PlusCircle size={16} strokeWidth={1.75} style={{ marginRight: '0.4rem' }} />
-                        Add Hall
-                    </button>
-                )}
+                <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', capacity: '', location: '', description: '' }); }}>
+                    <PlusCircle size={16} strokeWidth={1.75} style={{ marginRight: '0.4rem' }} />
+                    Add Hall
+                </button>
             </div>
 
             {msg && <div className="alert alert-success mb-2">{msg}</div>}
@@ -96,24 +94,22 @@ export default function HallsPage() {
                                 </div>
                                 {hall.description && <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>{hall.description}</div>}
                             </div>
-                            {user?.role === 'SUPER_ADMIN' && (
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <button className="btn btn-secondary btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }} onClick={() => startEdit(hall)}>
-                                        <Pencil size={13} strokeWidth={1.75} /> Edit
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button className="btn btn-secondary btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }} onClick={() => startEdit(hall)}>
+                                    <Pencil size={13} strokeWidth={1.75} /> Edit
+                                </button>
+                                {hall.isActive && (
+                                    <button className="btn btn-danger btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }} onClick={() => deactivate(hall.id)}>
+                                        <PowerOff size={13} strokeWidth={1.75} /> Deactivate
                                     </button>
-                                    {hall.isActive && (
-                                        <button className="btn btn-danger btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }} onClick={() => deactivate(hall.id)}>
-                                            <PowerOff size={13} strokeWidth={1.75} /> Deactivate
-                                        </button>
-                                    )}
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     ))}
                     {halls.length === 0 && (
                         <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
                             <Landmark size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>No halls added yet. {user?.role === 'SUPER_ADMIN' ? 'Add the first hall above.' : 'Contact Super Admin.'}</p>
+                            <p>No halls added yet. Add the first hall above.</p>
                         </div>
                     )}
                 </div>
