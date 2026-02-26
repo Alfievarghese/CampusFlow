@@ -1,7 +1,7 @@
 const express = require('express');
 const supabase = require('../lib/supabase');
 const { v4: uuidv4 } = require('uuid');
-const { authenticate, requireAdmin, requireSuperAdmin } = require('../middleware/auth.middleware');
+const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
 const { auditLog } = require('../lib/audit');
 
 const router = express.Router();
@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/halls
-router.post('/', authenticate, requireAdmin, requireSuperAdmin, async (req, res) => {
+router.post('/', authenticate, requireAdmin, async (req, res) => {
     const { name, capacity, location, description } = req.body;
     if (!name || !capacity || !location) return res.status(400).json({ error: 'name, capacity, and location are required.' });
     const { data: hall, error } = await supabase.from('Hall').insert({
@@ -33,7 +33,7 @@ router.post('/', authenticate, requireAdmin, requireSuperAdmin, async (req, res)
 });
 
 // PATCH /api/halls/:id
-router.patch('/:id', authenticate, requireAdmin, requireSuperAdmin, async (req, res) => {
+router.patch('/:id', authenticate, requireAdmin, async (req, res) => {
     const { name, capacity, location, description, isActive } = req.body;
     const updateData = {};
     if (name) updateData.name = name;
@@ -48,7 +48,7 @@ router.patch('/:id', authenticate, requireAdmin, requireSuperAdmin, async (req, 
 });
 
 // DELETE /api/halls/:id (soft delete)
-router.delete('/:id', authenticate, requireAdmin, requireSuperAdmin, async (req, res) => {
+router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
     await supabase.from('Hall').update({ isActive: false }).eq('id', req.params.id);
     await auditLog(req.user.id, 'HALL_DEACTIVATED', req.params.id);
     res.json({ message: 'Hall deactivated.' });
