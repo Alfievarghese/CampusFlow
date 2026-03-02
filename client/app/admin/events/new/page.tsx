@@ -65,7 +65,7 @@ export default function NewEventPage() {
             if (poster) data.append('poster', poster);
             if (banner) data.append('banner', banner);
 
-            const res = await api.post('/events', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+            const res = await api.post('/events', data, { timeout: 60000 });
             if (res.data.capacityWarning) setWarning(res.data.capacityWarning);
             router.push('/admin/events');
         } catch (err: any) {
