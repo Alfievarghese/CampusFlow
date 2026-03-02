@@ -1,7 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const supabase = require('../lib/supabase');
 const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
@@ -10,21 +9,9 @@ const { auditLog } = require('../lib/audit');
 
 const router = express.Router();
 
-// Multer setup for poster & banner uploads
-// Use /tmp on Vercel (read-only filesystem), local uploads/ otherwise
-const uploadDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) { try { fs.mkdirSync(uploadDir, { recursive: true }); } catch { /* ignore */ } }
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        const prefix = file.fieldname === 'banner' ? 'banner' : 'poster';
-        cb(null, `${prefix}_${uuidv4()}${ext}`);
-    },
-});
+// Multer — memory storage (files stay as buffers, then we push to Supabase Storage)
 const upload = multer({
-    storage,
+    storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         if (/image\/(jpeg|png|webp|gif)/.test(file.mimetype)) cb(null, true);
@@ -32,6 +19,19 @@ const upload = multer({
     },
 });
 const eventUpload = upload.fields([{ name: 'poster', maxCount: 1 }, { name: 'banner', maxCount: 1 }]);
+
+// Upload a multer file buffer to Supabase Storage, returns public URL or null
+async function uploadToSupabase(file, prefix) {
+    if (!file) return null;
+    const ext = path.extname(file.originalname) || '.jpg';
+    const filename = `${prefix}_${uuidv4()}${ext}`;
+    const { error } = await supabase.storage
+        .from('event-images')
+        .upload(filename, file.buffer, { contentType: file.mimetype, upsert: false });
+    if (error) { console.error('Supabase Storage upload error:', error.message); return null; }
+    const { data } = supabase.storage.from('event-images').getPublicUrl(filename);
+    return data.publicUrl;
+}
 
 const EVENT_SELECT = 'id, title, description, startTime, endTime, status, category, inviteType, expectedAttendance, posterUrl, bannerUrl, recurrenceRule, createdAt, updatedAt, createdBy, hallId, hall:Hall(id, name, capacity, location), creator:User(id, name, email)';
 
@@ -111,8 +111,8 @@ router.post('/', authenticate, requireAdmin, eventUpload, async (req, res) => {
         }
     }
 
-    const posterUrl = req.files?.poster?.[0] ? `/uploads/${req.files.poster[0].filename}` : null;
-    const bannerUrl = req.files?.banner?.[0] ? `/uploads/${req.files.banner[0].filename}` : null;
+    const posterUrl = await uploadToSupabase(req.files?.poster?.[0], 'poster');
+    const bannerUrl = await uploadToSupabase(req.files?.banner?.[0], 'banner');
 
     const { data: event, error } = await supabase.from('Event').insert({
         id: uuidv4(),
@@ -159,8 +159,8 @@ router.patch('/:id', authenticate, requireAdmin, eventUpload, async (req, res) =
         }
     }
 
-    const posterUrl = req.files?.poster?.[0] ? `/uploads/${req.files.poster[0].filename}` : existing.posterUrl;
-    const bannerUrl = req.files?.banner?.[0] ? `/uploads/${req.files.banner[0].filename}` : existing.bannerUrl;
+    const posterUrl = (await uploadToSupabase(req.files?.poster?.[0], 'poster')) || existing.posterUrl;
+    const bannerUrl = (await uploadToSupabase(req.files?.banner?.[0], 'banner')) || existing.bannerUrl;
 
     const { data: updated, error } = await supabase.from('Event').update({
         title: title || existing.title,
