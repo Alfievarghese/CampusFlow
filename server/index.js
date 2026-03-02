@@ -63,6 +63,10 @@ const loginLimiter = rateLimit({
 
 // Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// On Vercel, also serve from /tmp (where multer writes in serverless environment)
+if (process.env.VERCEL) {
+  app.use('/uploads', express.static('/tmp'));
+}
 
 // Routes
 app.use('/api/auth', loginLimiter, authRoutes);
