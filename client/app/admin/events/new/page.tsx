@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { uploadEventImage } from '@/lib/supabase';
 import { Plus, AlertTriangle } from 'lucide-react';
 
 interface Hall { id: string; name: string; capacity: number; location: string; }
@@ -52,27 +53,25 @@ export default function NewEventPage() {
             return setError('Please fill all required fields.');
         }
 
-        // Client-side file size check (Vercel has 4.5MB body limit for serverless functions)
-        const MAX_TOTAL = 4 * 1024 * 1024; // 4MB (leave room for form fields)
-        const totalSize = (poster?.size || 0) + (banner?.size || 0);
-        if (totalSize > MAX_TOTAL) {
-            return setError(`Files too large (${(totalSize / 1024 / 1024).toFixed(1)}MB). Combined poster + banner must be under 4MB.`);
-        }
-
         setLoading(true);
         try {
-            const data = new FormData();
-            Object.entries(form).forEach(([k, v]) => {
-                if (!['recurrenceType', 'recurrenceInterval', 'recurrenceUntil'].includes(k)) {
-                    data.append(k, v);
-                }
-            });
-            const rrule = buildRecurrenceRule();
-            if (rrule) data.append('recurrenceRule', rrule);
-            if (poster) data.append('poster', poster);
-            if (banner) data.append('banner', banner);
+            // 1. Upload files directly to Supabase Storage (bypasses Vercel 4.5MB limit)
+            const [posterUrl, bannerUrl] = await Promise.all([
+                uploadEventImage(poster, 'poster'),
+                uploadEventImage(banner, 'banner'),
+            ]);
 
-            const res = await api.post('/events', data, { timeout: 60000 });
+            // 2. Send event data as JSON (no files, just URLs)
+            const payload: Record<string, any> = { ...form };
+            delete payload.recurrenceType;
+            delete payload.recurrenceInterval;
+            delete payload.recurrenceUntil;
+            const rrule = buildRecurrenceRule();
+            if (rrule) payload.recurrenceRule = rrule;
+            if (posterUrl) payload.posterUrl = posterUrl;
+            if (bannerUrl) payload.bannerUrl = bannerUrl;
+
+            const res = await api.post('/events', payload);
             if (res.data.capacityWarning) setWarning(res.data.capacityWarning);
             router.push('/admin/events');
         } catch (err: any) {
@@ -83,13 +82,8 @@ export default function NewEventPage() {
                 if (d.capacityWarning) setWarning(d.capacityWarning);
                 setStep(2);
             } else {
-                // Extract string from error (may be a string or an object like {code, message})
                 const errMsg = typeof d?.error === 'string' ? d.error : d?.error?.message || err.message || 'Failed to create event.';
-                if (err.response?.status === 413) {
-                    setError('Files too large for upload. Try smaller images (under 4MB total).');
-                } else {
-                    setError(errMsg);
-                }
+                setError(errMsg);
             }
         }
         setLoading(false);
