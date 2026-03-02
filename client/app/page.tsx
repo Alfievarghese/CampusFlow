@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
-import { CalendarDays, Clock, MapPin, User, Users, Globe, Lock } from 'lucide-react';
+import { CalendarDays, Clock, MapPin, User, Users, Globe, Lock, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
 
 interface Event {
   id: string;
@@ -14,9 +14,20 @@ interface Event {
   inviteType: string;
   status: string;
   posterUrl?: string;
+  bannerUrl?: string;
   hall: { name: string; capacity: number };
   creator: { name: string };
   _count: { rsvps: number };
+}
+
+interface BannerEvent {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  bannerUrl: string;
+  category: string;
+  hall: { name: string };
 }
 
 const CATEGORIES = ['All', 'Academic', 'Cultural', 'Sports', 'Technical', 'Workshop', 'Social', 'Other'];
@@ -26,6 +37,100 @@ function formatDate(d: string) {
 }
 function formatTime(d: string) {
   return new Date(d).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+
+/* =============================================
+   BANNER CAROUSEL — Auto-scrolling hero banners
+   ============================================= */
+const FALLBACK_SLIDES = [
+  { title: 'Welcome to CampusFlow', subtitle: 'Your all-in-one campus event management platform', gradient: 'linear-gradient(135deg, #1a1f2e 0%, #0f3460 50%, #16213e 100%)' },
+  { title: 'Host Your Next Event', subtitle: 'Book halls, manage RSVPs, and schedule events — effortlessly', gradient: 'linear-gradient(135deg, #1a1f2e 0%, #2d1b4e 50%, #1a1235 100%)' },
+  { title: 'Discover What\u2019s Happening', subtitle: 'Stay connected with every event on campus', gradient: 'linear-gradient(135deg, #1a1f2e 0%, #0b3d2e 50%, #112220 100%)' },
+];
+
+function BannerCarousel() {
+  const [banners, setBanners] = useState<BannerEvent[]>([]);
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const apiBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || '';
+
+  useEffect(() => {
+    api.get('/events/banners').then(res => setBanners(res.data)).catch(() => { });
+  }, []);
+
+  const hasBanners = banners.length > 0;
+  const slideCount = hasBanners ? banners.length : FALLBACK_SLIDES.length;
+
+  const goTo = useCallback((i: number) => setCurrent((i + slideCount) % slideCount), [slideCount]);
+  const next = useCallback(() => goTo(current + 1), [current, goTo]);
+  const prev = useCallback(() => goTo(current - 1), [current, goTo]);
+
+  useEffect(() => {
+    if (paused || slideCount <= 1) return;
+    timerRef.current = setInterval(next, 5000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [current, paused, slideCount, next]);
+
+  return (
+    <div
+      className="banner-carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Slides */}
+      {hasBanners ? banners.map((b, i) => (
+        <Link
+          key={b.id}
+          href={`/events/${b.id}`}
+          className={`banner-slide ${i === current ? 'active' : ''}`}
+          style={{ backgroundImage: `url(${apiBase}${b.bannerUrl})` }}
+        >
+          <div className="banner-overlay" />
+          <div className="banner-content">
+            <span className="banner-category">{b.category}</span>
+            <h2 className="banner-title">{b.title}</h2>
+            <p className="banner-meta">
+              <CalendarDays size={14} /> {formatDate(b.startTime)} &middot; {formatTime(b.startTime)} – {formatTime(b.endTime)} &middot; {b.hall.name}
+            </p>
+          </div>
+        </Link>
+      )) : FALLBACK_SLIDES.map((s, i) => (
+        <div
+          key={i}
+          className={`banner-slide ${i === current ? 'active' : ''}`}
+          style={{ background: s.gradient }}
+        >
+          <div className="banner-content" style={{ textAlign: 'center', maxWidth: '600px' }}>
+            <div className="sidebar-logo-mark" style={{ margin: '0 auto 1rem', width: 48, height: 48, fontSize: '1.2rem' }}>CF</div>
+            <h2 className="banner-title">{s.title}</h2>
+            <p className="banner-subtitle">{s.subtitle}</p>
+          </div>
+        </div>
+      ))}
+
+      {/* Arrows */}
+      {slideCount > 1 && (
+        <>
+          <button className="banner-arrow banner-arrow-left" onClick={(e) => { e.preventDefault(); prev(); }} aria-label="Previous">
+            <ChevronLeft size={22} />
+          </button>
+          <button className="banner-arrow banner-arrow-right" onClick={(e) => { e.preventDefault(); next(); }} aria-label="Next">
+            <ChevronRightIcon size={22} />
+          </button>
+        </>
+      )}
+
+      {/* Dots */}
+      {slideCount > 1 && (
+        <div className="banner-dots">
+          {Array.from({ length: slideCount }).map((_, i) => (
+            <button key={i} className={`banner-dot ${i === current ? 'active' : ''}`} onClick={() => goTo(i)} aria-label={`Slide ${i + 1}`} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function HomePage() {
@@ -72,6 +177,9 @@ export default function HomePage() {
           </div>
         </div>
       </nav>
+
+      {/* BANNER CAROUSEL */}
+      <BannerCarousel />
 
       {/* HERO */}
       <section className="hero">

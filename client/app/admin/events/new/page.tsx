@@ -20,6 +20,7 @@ export default function NewEventPage() {
         recurrenceInterval: '1', recurrenceUntil: '',
     });
     const [poster, setPoster] = useState<File | null>(null);
+    const [banner, setBanner] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [warning, setWarning] = useState('');
@@ -62,6 +63,7 @@ export default function NewEventPage() {
             const rrule = buildRecurrenceRule();
             if (rrule) data.append('recurrenceRule', rrule);
             if (poster) data.append('poster', poster);
+            if (banner) data.append('banner', banner);
 
             const res = await api.post('/events', data, { headers: { 'Content-Type': 'multipart/form-data' } });
             if (res.data.capacityWarning) setWarning(res.data.capacityWarning);
@@ -207,7 +209,14 @@ export default function NewEventPage() {
                                     <input type="file" className="form-input" accept="image/*"
                                         onChange={e => setPoster(e.target.files?.[0] || null)}
                                         style={{ padding: '0.5rem' }} />
-                                    <span className="form-hint">Max 5MB – JPG, PNG, WEBP</span>
+                                    <span className="form-hint">Square or portrait image – Max 5MB</span>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Banner Image <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(Optional)</span></label>
+                                    <input type="file" className="form-input" accept="image/*"
+                                        onChange={e => setBanner(e.target.files?.[0] || null)}
+                                        style={{ padding: '0.5rem' }} />
+                                    <span className="form-hint">Recommended: 1200×400px (3:1 ratio) — displayed on the homepage carousel</span>
                                 </div>
                             </div>
                         </div>

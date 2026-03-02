@@ -9,12 +9,13 @@ const { auditLog } = require('../lib/audit');
 
 const router = express.Router();
 
-// Multer setup for poster uploads
+// Multer setup for poster & banner uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(__dirname, '../uploads')),
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
-        cb(null, `poster_${uuidv4()}${ext}`);
+        const prefix = file.fieldname === 'banner' ? 'banner' : 'poster';
+        cb(null, `${prefix}_${uuidv4()}${ext}`);
     },
 });
 const upload = multer({
@@ -25,8 +26,9 @@ const upload = multer({
         else cb(new Error('Only image files are allowed'));
     },
 });
+const eventUpload = upload.fields([{ name: 'poster', maxCount: 1 }, { name: 'banner', maxCount: 1 }]);
 
-const EVENT_SELECT = 'id, title, description, startTime, endTime, status, category, inviteType, expectedAttendance, posterUrl, recurrenceRule, createdAt, updatedAt, createdBy, hallId, hall:Hall(id, name, capacity, location), creator:User(id, name, email)';
+const EVENT_SELECT = 'id, title, description, startTime, endTime, status, category, inviteType, expectedAttendance, posterUrl, bannerUrl, recurrenceRule, createdAt, updatedAt, createdBy, hallId, hall:Hall(id, name, capacity, location), creator:User(id, name, email)';
 
 // GET /api/events - Public list
 router.get('/', async (req, res) => {
@@ -57,8 +59,21 @@ router.get('/:id', async (req, res) => {
     res.json(event);
 });
 
+// GET /api/events/banners - Upcoming events with banner images for homepage carousel
+router.get('/banners', async (req, res) => {
+    const { data: events, error } = await supabase.from('Event')
+        .select('id, title, startTime, endTime, bannerUrl, category, hall:Hall(name)')
+        .eq('status', 'CONFIRMED')
+        .not('bannerUrl', 'is', null)
+        .gte('startTime', new Date().toISOString())
+        .order('startTime', { ascending: true })
+        .limit(8);
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(events);
+});
+
 // POST /api/events - Create event
-router.post('/', authenticate, requireAdmin, upload.single('poster'), async (req, res) => {
+router.post('/', authenticate, requireAdmin, eventUpload, async (req, res) => {
     const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, recurrenceRule } = req.body;
     if (!title || !startTime || !endTime || !hallId || !category) {
         return res.status(400).json({ error: 'title, startTime, endTime, hallId, category are required.' });
@@ -91,7 +106,8 @@ router.post('/', authenticate, requireAdmin, upload.single('poster'), async (req
         }
     }
 
-    const posterUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    const posterUrl = req.files?.poster?.[0] ? `/uploads/${req.files.poster[0].filename}` : null;
+    const bannerUrl = req.files?.banner?.[0] ? `/uploads/${req.files.banner[0].filename}` : null;
 
     const { data: event, error } = await supabase.from('Event').insert({
         id: uuidv4(),
@@ -105,6 +121,7 @@ router.post('/', authenticate, requireAdmin, upload.single('poster'), async (req
         expectedAttendance: attendance,
         recurrenceRule: recurrenceRule || null,
         posterUrl,
+        bannerUrl,
         status: 'CONFIRMED',
         createdBy: req.user.id,
         createdAt: new Date().toISOString(),
@@ -117,7 +134,7 @@ router.post('/', authenticate, requireAdmin, upload.single('poster'), async (req
 });
 
 // PATCH /api/events/:id - Update event
-router.patch('/:id', authenticate, requireAdmin, upload.single('poster'), async (req, res) => {
+router.patch('/:id', authenticate, requireAdmin, eventUpload, async (req, res) => {
     const { data: existing } = await supabase.from('Event').select('*').eq('id', req.params.id).single();
     if (!existing) return res.status(404).json({ error: 'Event not found.' });
     if (existing.createdBy !== req.user.id && req.user.role !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Not authorized to edit this event.' });
@@ -137,7 +154,8 @@ router.patch('/:id', authenticate, requireAdmin, upload.single('poster'), async 
         }
     }
 
-    const posterUrl = req.file ? `/uploads/${req.file.filename}` : existing.posterUrl;
+    const posterUrl = req.files?.poster?.[0] ? `/uploads/${req.files.poster[0].filename}` : existing.posterUrl;
+    const bannerUrl = req.files?.banner?.[0] ? `/uploads/${req.files.banner[0].filename}` : existing.bannerUrl;
 
     const { data: updated, error } = await supabase.from('Event').update({
         title: title || existing.title,
@@ -149,6 +167,7 @@ router.patch('/:id', authenticate, requireAdmin, upload.single('poster'), async 
         inviteType: inviteType || existing.inviteType,
         expectedAttendance: expectedAttendance !== undefined ? parseInt(expectedAttendance) : existing.expectedAttendance,
         posterUrl,
+        bannerUrl,
         updatedAt: new Date().toISOString(),
     }).eq('id', req.params.id).select(EVENT_SELECT).single();
 

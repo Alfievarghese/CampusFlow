@@ -50,6 +50,7 @@ model Event {
   inviteType         String    @default("PUBLIC") // PUBLIC, INVITE_ONLY
   expectedAttendance Int
   posterUrl          String?
+  bannerUrl          String?   // Optional wide banner image (1200x400) for homepage carousel
   recurrenceRule     String?   // JSON: {type:"WEEKLY"|"MONTHLY"|"CUSTOM", interval:1, until:"date", days:[...]}
   createdBy          String
   creator            User      @relation(fields: [createdBy], references: [id])
