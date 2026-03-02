@@ -84,7 +84,7 @@ function BannerCarousel() {
           key={b.id}
           href={`/events/${b.id}`}
           className={`banner-slide ${i === current ? 'active' : ''}`}
-          style={{ backgroundImage: `url(${apiBase}${b.bannerUrl})` }}
+          style={{ backgroundImage: `url(${b.bannerUrl.startsWith('http') ? b.bannerUrl : `${apiBase}${b.bannerUrl}`})` }}
         >
           <div className="banner-overlay" />
           <div className="banner-content">
@@ -300,7 +300,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
   return (
     <div className={`event-card anim-slide-up anim-delay-${Math.min(index + 1, 5)}`}>
       {event.posterUrl ? (
-        <img src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || ''}${event.posterUrl}`} alt={event.title} className="event-card-img" />
+        <img src={event.posterUrl.startsWith('http') ? event.posterUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || ''}${event.posterUrl}`} alt={event.title} className="event-card-img" />
       ) : (
         <div className="event-card-img-placeholder">
           {event.category[0]}
