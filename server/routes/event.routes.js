@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const supabase = require('../lib/supabase');
 const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
@@ -10,8 +11,12 @@ const { auditLog } = require('../lib/audit');
 const router = express.Router();
 
 // Multer setup for poster & banner uploads
+// Use /tmp on Vercel (read-only filesystem), local uploads/ otherwise
+const uploadDir = process.env.VERCEL ? '/tmp' : path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) { try { fs.mkdirSync(uploadDir, { recursive: true }); } catch { /* ignore */ } }
+
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, path.join(__dirname, '../uploads')),
+    destination: (req, file, cb) => cb(null, uploadDir),
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
         const prefix = file.fieldname === 'banner' ? 'banner' : 'poster';
@@ -52,13 +57,6 @@ router.get('/my', authenticate, requireAdmin, async (req, res) => {
     res.json(events);
 });
 
-// GET /api/events/:id
-router.get('/:id', async (req, res) => {
-    const { data: event } = await supabase.from('Event').select(EVENT_SELECT).eq('id', req.params.id).single();
-    if (!event) return res.status(404).json({ error: 'Event not found.' });
-    res.json(event);
-});
-
 // GET /api/events/banners - Upcoming events with banner images for homepage carousel
 router.get('/banners', async (req, res) => {
     const { data: events, error } = await supabase.from('Event')
@@ -70,6 +68,13 @@ router.get('/banners', async (req, res) => {
         .limit(8);
     if (error) return res.status(500).json({ error: error.message });
     res.json(events);
+});
+
+// GET /api/events/:id
+router.get('/:id', async (req, res) => {
+    const { data: event } = await supabase.from('Event').select(EVENT_SELECT).eq('id', req.params.id).single();
+    if (!event) return res.status(404).json({ error: 'Event not found.' });
+    res.json(event);
 });
 
 // POST /api/events - Create event
