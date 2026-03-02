@@ -95,7 +95,7 @@ export default function EventsPage() {
                                                 {event.inviteType}
                                             </span>
                                         </td>
-                                        <td style={{ fontFamily: 'var(--font-mono)' }}>{event._count.rsvps}</td>
+                                        <td style={{ fontFamily: 'var(--font-mono)' }}>{event._count?.rsvps ?? 0}</td>
                                         <td><span className={`badge badge-${event.status.toLowerCase().replace('_', '-')}`}>{event.status}</span></td>
                                         <td>
                                             <div style={{ display: 'flex', gap: '0.5rem' }}>
