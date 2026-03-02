@@ -78,8 +78,8 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/events - Create event
-router.post('/', authenticate, requireAdmin, eventUpload, async (req, res) => {
-    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, recurrenceRule } = req.body;
+router.post('/', authenticate, requireAdmin, async (req, res) => {
+    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, recurrenceRule, posterUrl, bannerUrl } = req.body;
     if (!title || !startTime || !endTime || !hallId || !category) {
         return res.status(400).json({ error: 'title, startTime, endTime, hallId, category are required.' });
     }
@@ -110,9 +110,6 @@ router.post('/', authenticate, requireAdmin, eventUpload, async (req, res) => {
             return res.status(409).json({ error: 'Hall is already booked for this time slot.', conflicts: conflictResult.conflictingEvents, capacityWarning, canRequestOverride: true });
         }
     }
-
-    const posterUrl = await uploadToSupabase(req.files?.poster?.[0], 'poster');
-    const bannerUrl = await uploadToSupabase(req.files?.banner?.[0], 'banner');
 
     const { data: event, error } = await supabase.from('Event').insert({
         id: uuidv4(),
