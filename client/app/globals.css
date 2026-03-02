@@ -426,8 +426,10 @@ kbd {
 }
 
 .btn-sm {
-  padding: 0.4rem 0.85rem;
+  padding: 0.5rem 0.9rem;
   font-size: 0.8rem;
+  line-height: 1.4;
+  justify-content: center;
 }
 
 .btn-lg {
