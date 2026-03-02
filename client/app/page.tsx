@@ -17,7 +17,7 @@ interface Event {
   bannerUrl?: string;
   hall: { name: string; capacity: number };
   creator: { name: string };
-  _count: { rsvps: number };
+  _count?: { rsvps: number };
 }
 
 interface BannerEvent {
@@ -330,7 +330,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
             <User size={13} />{event.creator.name}
           </div>
           <div className="event-card-detail">
-            <Users size={13} />{event._count.rsvps} RSVPs
+            <Users size={13} />{event._count?.rsvps ?? 0} RSVPs
           </div>
         </div>
         <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
