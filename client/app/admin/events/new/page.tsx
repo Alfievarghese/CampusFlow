@@ -52,6 +52,13 @@ export default function NewEventPage() {
             return setError('Please fill all required fields.');
         }
 
+        // Client-side file size check (Vercel has 4.5MB body limit for serverless functions)
+        const MAX_TOTAL = 4 * 1024 * 1024; // 4MB (leave room for form fields)
+        const totalSize = (poster?.size || 0) + (banner?.size || 0);
+        if (totalSize > MAX_TOTAL) {
+            return setError(`Files too large (${(totalSize / 1024 / 1024).toFixed(1)}MB). Combined poster + banner must be under 4MB.`);
+        }
+
         setLoading(true);
         try {
             const data = new FormData();
@@ -76,7 +83,13 @@ export default function NewEventPage() {
                 if (d.capacityWarning) setWarning(d.capacityWarning);
                 setStep(2);
             } else {
-                setError(d?.error || err.message || 'Failed to create event.');
+                // Extract string from error (may be a string or an object like {code, message})
+                const errMsg = typeof d?.error === 'string' ? d.error : d?.error?.message || err.message || 'Failed to create event.';
+                if (err.response?.status === 413) {
+                    setError('Files too large for upload. Try smaller images (under 4MB total).');
+                } else {
+                    setError(errMsg);
+                }
             }
         }
         setLoading(false);
