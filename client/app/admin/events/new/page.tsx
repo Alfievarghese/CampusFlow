@@ -69,13 +69,14 @@ export default function NewEventPage() {
             if (res.data.capacityWarning) setWarning(res.data.capacityWarning);
             router.push('/admin/events');
         } catch (err: any) {
+            console.error('[CampusFlow] Event creation error:', err.response?.status, err.response?.data || err.message);
             const d = err.response?.data;
             if (d?.conflicts) {
                 setConflicts(d.conflicts);
                 if (d.capacityWarning) setWarning(d.capacityWarning);
                 setStep(2);
             } else {
-                setError(d?.error || 'Failed to create event.');
+                setError(d?.error || err.message || 'Failed to create event.');
             }
         }
         setLoading(false);
