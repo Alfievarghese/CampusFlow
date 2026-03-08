@@ -436,7 +436,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
 
       <div className="event-card-body">
         {/* Title */}
-        <div className="event-card-title" style={{ marginBottom: '0.3rem' }}>{event.title}</div>
+        <div className="event-card-title" style={{ marginBottom: '0.3rem', fontFamily: 'var(--font-sans)', fontSize: '1.25rem', fontWeight: 700 }}>{event.title}</div>
         <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '0.75rem' }}>
           {event.description.slice(0, 85)}{event.description.length > 85 ? '...' : ''}
         </p>
@@ -515,67 +515,106 @@ function EventCard({ event, index }: { event: Event; index: number }) {
           <div style={{ display: 'flex', gap: '0.5rem' }}>
           {event.inviteType === 'PUBLIC' ? (
             <motion.button
-              className="btn btn-primary btn-sm"
-              style={{ flex: 1 }}
-              onClick={() => { setShowRsvp(!showRsvp); setMsg(''); }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className="btn btn-primary btn-sm btn-full"
+              onClick={() => { setShowRsvp(true); setMsg(''); }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              {showRsvp ? 'Cancel' : timeLeft > 0 ? '+ Reserve Spot' : '+ RSVP'}
+              + Reserve Spot
             </motion.button>
           ) : (
             <motion.button
-              className="btn btn-secondary btn-sm"
-              style={{ flex: 1 }}
-              onClick={() => { setShowInviteReq(!showInviteReq); setMsg(''); }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className="btn btn-secondary btn-sm btn-full"
+              onClick={() => { setShowInviteReq(true); setMsg(''); }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              {showInviteReq ? 'Cancel' : <><Lock size={12} style={{ marginRight: 4 }} />Request Invite</>}
+              <Lock size={12} style={{ marginRight: 4 }} />Request Invite
             </motion.button>
           )}
         </div>
-
-        {/* RSVP form */}
-        {showRsvp && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
-          >
-            {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
-            <input className="form-input" placeholder="Your name" value={rsvpForm.name} onChange={e => setRsvpForm(p => ({ ...p, name: e.target.value }))} />
-            <input className="form-input" placeholder="Email" type="email" value={rsvpForm.email} onChange={e => setRsvpForm(p => ({ ...p, email: e.target.value }))} />
-            <select className="form-select" value={rsvpForm.status} onChange={e => setRsvpForm(p => ({ ...p, status: e.target.value }))}>
-              <option value="GOING">Going</option>
-              <option value="INTERESTED">Interested</option>
-            </select>
-            <button className="btn btn-primary btn-sm btn-full" onClick={submitRsvp} disabled={loading}>
-              {loading ? 'Submitting...' : 'Submit RSVP'}
-            </button>
-          </motion.div>
-        )}
-
-        {/* Invite request form */}
-        {showInviteReq && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
-          >
-            {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
-            <input className="form-input" placeholder="Your name" value={inviteForm.name} onChange={e => setInviteForm(p => ({ ...p, name: e.target.value }))} />
-            <input className="form-input" placeholder="Email" type="email" value={inviteForm.email} onChange={e => setInviteForm(p => ({ ...p, email: e.target.value }))} />
-            <textarea className="form-textarea" placeholder="Why do you want to attend?" value={inviteForm.info} onChange={e => setInviteForm(p => ({ ...p, info: e.target.value }))} rows={3} />
-            <button className="btn btn-secondary btn-sm btn-full" onClick={submitInvite} disabled={loading}>
-              {loading ? 'Submitting...' : 'Request Invite'}
-            </button>
-          </motion.div>
-        )}
         </div>
       </div>
+
+      {/* RSVP Modal */}
+      {showRsvp && (
+        <div className="modal-overlay" onClick={() => setShowRsvp(false)} style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(10,12,16,0.7)', backdropFilter: 'blur(6px)' }}>
+          <motion.div 
+            className="card" 
+            onClick={e => e.stopPropagation()} 
+            initial={{ opacity: 0, scale: 0.95, y: 10 }} 
+            animate={{ opacity: 1, scale: 1, y: 0 }} 
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            style={{ width: '90%', maxWidth: '420px', padding: '1.75rem', background: 'var(--ink)' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', color: 'var(--text-primary)' }}>RSVP</h3>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowRsvp(false)} style={{ padding: '0.3rem' }}>X</button>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>Reserve your spot for <strong>{event.title}</strong></p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
+              <div>
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Name</label>
+                <input className="form-input" placeholder="Your full name" value={rsvpForm.name} onChange={e => setRsvpForm(p => ({ ...p, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Email Address</label>
+                <input className="form-input" placeholder="student@college.edu" type="email" value={rsvpForm.email} onChange={e => setRsvpForm(p => ({ ...p, email: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Status</label>
+                <select className="form-select" value={rsvpForm.status} onChange={e => setRsvpForm(p => ({ ...p, status: e.target.value }))}>
+                  <option value="GOING">Going</option>
+                  <option value="INTERESTED">Interested</option>
+                </select>
+              </div>
+              <button className="btn btn-primary btn-full" onClick={submitRsvp} disabled={loading} style={{ marginTop: '0.5rem' }}>
+                {loading ? 'Submitting...' : 'Confirm RSVP'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Invite Request Modal */}
+      {showInviteReq && (
+        <div className="modal-overlay" onClick={() => setShowInviteReq(false)} style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(10,12,16,0.7)', backdropFilter: 'blur(6px)' }}>
+          <motion.div 
+            className="card" 
+            onClick={e => e.stopPropagation()} 
+            initial={{ opacity: 0, scale: 0.95, y: 10 }} 
+            animate={{ opacity: 1, scale: 1, y: 0 }} 
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            style={{ width: '90%', maxWidth: '420px', padding: '1.75rem', background: 'var(--ink)' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', color: 'var(--text-primary)' }}>Request Invite</h3>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowInviteReq(false)} style={{ padding: '0.3rem' }}>X</button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
+              <div>
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Name</label>
+                <input className="form-input" placeholder="Your full name" value={inviteForm.name} onChange={e => setInviteForm(p => ({ ...p, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Email Address</label>
+                <input className="form-input" placeholder="Email" type="email" value={inviteForm.email} onChange={e => setInviteForm(p => ({ ...p, email: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>Reason for attending</label>
+                <textarea className="form-textarea" placeholder="Why do you want to attend?" value={inviteForm.info} onChange={e => setInviteForm(p => ({ ...p, info: e.target.value }))} rows={3} />
+              </div>
+              <button className="btn btn-secondary btn-full" onClick={submitInvite} disabled={loading} style={{ marginTop: '0.5rem' }}>
+                {loading ? 'Submitting...' : 'Send Request'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 }
