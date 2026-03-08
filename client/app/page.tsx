@@ -1,8 +1,12 @@
 'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import api from '@/lib/api';
 import { CalendarDays, Clock, MapPin, User, Users, Globe, Lock, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
+
+// Dynamic import to prevent SSR issues with Three.js WebGL
+const AuroraBackground = dynamic(() => import('@/components/AuroraBackground'), { ssr: false });
 
 interface Event {
   id: string;
@@ -181,10 +185,13 @@ export default function HomePage() {
       {/* BANNER CAROUSEL */}
       <BannerCarousel />
 
+      {/* AURORA BACKGROUND — renders behind hero */}
+      <AuroraBackground />
+
       {/* HERO */}
-      <section className="hero">
+      <section className="hero" style={{ position: 'relative', zIndex: 1 }}>
         <div className="container hero-content">
-          <div className="anim-fade" style={{ maxWidth: '660px' }}>
+          <div className="anim-fade hero-float" style={{ maxWidth: '660px' }}>
             <div className="hero-eyebrow">
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--lime)' }} />
               Live Campus Events Platform

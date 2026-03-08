@@ -1539,3 +1539,25 @@ kbd {
     display: none !important;
   }
 }
+
+/* ============================================
+   AURORA BACKGROUND — Float animation
+   ============================================ */
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero-float {
+  animation: heroFloat 6s ease-in-out infinite;
+}
+
+/* Ensure sections above aurora have proper z-index */
+.hero {
+  background: transparent !important;
+}
+
+#events {
+  position: relative;
+  z-index: 2;
+}
