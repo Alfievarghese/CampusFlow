@@ -1564,3 +1564,9 @@ kbd {
   position: relative;
   z-index: 2;
 }
+
+/* Cookie banner entrance animation */
+@keyframes cookieSlideUp {
+  0% { transform: translateX(-50%) translateY(120%); opacity: 0; }
+  100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
