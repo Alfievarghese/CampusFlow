@@ -185,12 +185,10 @@ export default function HomePage() {
       {/* BANNER CAROUSEL */}
       <BannerCarousel />
 
-      {/* ANIMATED BACKGROUND PATHS — renders behind hero */}
-      <BackgroundPaths />
-
-      {/* HERO */}
-      <section className="hero" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="container hero-content">
+      {/* HERO with animated background paths */}
+      <section className="hero" style={{ position: 'relative', zIndex: 1, overflow: 'hidden', minHeight: '100vh' }}>
+        <BackgroundPaths />
+        <div className="container hero-content" style={{ position: 'relative', zIndex: 2 }}>
           <div className="anim-fade hero-float" style={{ maxWidth: '660px' }}>
             <div className="hero-eyebrow">
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--lime)' }} />
