@@ -3,7 +3,8 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import api from '@/lib/api';
-import { CalendarDays, Clock, MapPin, User, Users, Globe, Lock, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
+import { CalendarDays, Clock, MapPin, Users, Globe, Lock, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // Dynamic import to prevent SSR issues with framer-motion
 const BackgroundPaths = dynamic(() => import('@/components/BackgroundPaths'), { ssr: false });
@@ -281,6 +282,26 @@ function EventCard({ event, index }: { event: Event; index: number }) {
   const [inviteForm, setInviteForm] = useState({ name: '', email: '', info: '' });
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  const eventStart = new Date(event.startTime);
+  const eventEnd = new Date(event.endTime);
+
+  useEffect(() => {
+    const update = () => setTimeLeft(Math.max(0, Math.floor((+eventStart - Date.now()) / 1000)));
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [event.startTime]);
+
+  const isLive = Date.now() >= +eventStart && Date.now() <= +eventEnd;
+  const isPast = Date.now() > +eventEnd;
+  const isSoon = timeLeft > 0 && timeLeft < 86400; // under 24h
+
+  const days = Math.floor(timeLeft / 86400);
+  const hours = Math.floor((timeLeft % 86400) / 3600);
+  const minutes = Math.floor((timeLeft % 3600) / 60);
+  const seconds = timeLeft % 60;
 
   const submitRsvp = async () => {
     if (!rsvpForm.name || !rsvpForm.email) return setMsg('Name and email required');
@@ -303,56 +324,219 @@ function EventCard({ event, index }: { event: Event; index: number }) {
   };
 
   return (
-    <div className={`event-card anim-slide-up anim-delay-${Math.min(index + 1, 5)}`}>
-      {event.posterUrl ? (
-        <img src={event.posterUrl.startsWith('http') ? event.posterUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || ''}${event.posterUrl}`} alt={event.title} className="event-card-img" />
-      ) : (
-        <div className="event-card-img-placeholder">
-          {event.category[0]}
-        </div>
-      )}
+    <motion.div
+      className="event-card"
+      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30, delay: index * 0.08 }}
+      whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300, damping: 25 } }}
+      style={{ cursor: 'pointer' }}
+    >
+      {/* Image with gradient overlay */}
+      <div style={{ position: 'relative', overflow: 'hidden' }}>
+        {event.posterUrl ? (
+          <motion.img
+            src={event.posterUrl.startsWith('http') ? event.posterUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || ''}${event.posterUrl}`}
+            alt={event.title}
+            className="event-card-img"
+            whileHover={{ scale: 1.08 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+        ) : (
+          <div className="event-card-img-placeholder">
+            {event.category[0]}
+          </div>
+        )}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent 60%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Category badge on image */}
+        <span style={{
+          position: 'absolute', top: 12, left: 12,
+          background: 'rgba(10,12,16,0.75)',
+          backdropFilter: 'blur(8px)',
+          color: 'var(--lime)',
+          padding: '0.25rem 0.65rem',
+          borderRadius: '999px',
+          fontSize: '0.7rem',
+          fontWeight: 600,
+          fontFamily: 'var(--font-mono)',
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+          border: '1px solid rgba(190,242,100,0.2)',
+        }}>
+          {event.category}
+        </span>
+
+        {/* Urgency / Status badges */}
+        {isSoon && !isLive && (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              position: 'absolute', top: 12, right: 12,
+              background: 'var(--rose)',
+              color: '#fff',
+              padding: '0.25rem 0.6rem',
+              borderRadius: '999px',
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              letterSpacing: '0.02em',
+            }}
+          >
+            ⚡ Starts Soon!
+          </motion.span>
+        )}
+        {isLive && (
+          <motion.span
+            animate={{ opacity: [1, 0.6, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            style={{
+              position: 'absolute', top: 12, right: 12,
+              background: '#22c55e',
+              color: '#fff',
+              padding: '0.25rem 0.6rem',
+              borderRadius: '999px',
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff' }} />
+            LIVE NOW
+          </motion.span>
+        )}
+
+        {/* Invite type badge */}
+        <span style={{
+          position: 'absolute', bottom: 10, right: 10,
+          display: 'inline-flex', alignItems: 'center', gap: '0.25rem',
+          background: event.inviteType === 'PUBLIC' ? 'rgba(96,189,255,0.15)' : 'rgba(251,176,64,0.15)',
+          color: event.inviteType === 'PUBLIC' ? 'var(--sky)' : 'var(--amber)',
+          padding: '0.2rem 0.55rem',
+          borderRadius: '999px',
+          fontSize: '0.65rem',
+          fontWeight: 600,
+          backdropFilter: 'blur(8px)',
+          border: `1px solid ${event.inviteType === 'PUBLIC' ? 'rgba(96,189,255,0.25)' : 'rgba(251,176,64,0.25)'}`,
+        }}>
+          {event.inviteType === 'PUBLIC' ? <><Globe size={10} /> Public</> : <><Lock size={10} /> Invite</>}
+        </span>
+      </div>
+
       <div className="event-card-body">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="event-card-category">{event.category}</span>
-          <span className={`badge ${event.inviteType === 'PUBLIC' ? 'badge-public' : 'badge-invite'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-            {event.inviteType === 'PUBLIC' ? <><Globe size={11} /> Public</> : <><Lock size={11} /> Invite Only</>}
-          </span>
+        {/* Title */}
+        <div className="event-card-title" style={{ marginBottom: '0.3rem' }}>{event.title}</div>
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '0.75rem' }}>
+          {event.description.slice(0, 85)}{event.description.length > 85 ? '...' : ''}
+        </p>
+
+        {/* Meta info */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CalendarDays size={12} />{formatDate(event.startTime)}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12} />{formatTime(event.startTime)} – {formatTime(event.endTime)}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={12} />{event.hall.name}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={12} />{event._count?.rsvps ?? 0} RSVPs</span>
         </div>
-        <div className="event-card-title">{event.title}</div>
-        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>{event.description.slice(0, 100)}{event.description.length > 100 ? '...' : ''}</p>
-        <div className="divider" />
-        <div className="event-card-meta">
-          <div className="event-card-detail">
-            <CalendarDays size={13} />{formatDate(event.startTime)}
+
+        {/* Countdown Timer */}
+        {!isPast && timeLeft > 0 && (
+          <div style={{ marginBottom: '0.75rem' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <Clock size={11} /> Starts in
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.35rem' }}>
+              {[
+                { v: days, l: 'Days' },
+                { v: hours, l: 'Hrs' },
+                { v: minutes, l: 'Min' },
+                { v: seconds, l: 'Sec' },
+              ].map((u, i) => (
+                <div key={u.l} style={{
+                  background: 'var(--ink)',
+                  borderRadius: '0.6rem',
+                  padding: '0.45rem 0.3rem',
+                  textAlign: 'center',
+                  border: '1px solid var(--border)',
+                }}>
+                  <motion.div
+                    key={`${u.l}-${u.v}`}
+                    initial={i === 3 ? { scale: 1.1, opacity: 0.7 } : false}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      fontFamily: 'var(--font-mono)',
+                      color: isSoon ? 'var(--rose)' : 'var(--lime)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {u.v.toString().padStart(2, '0')}
+                  </motion.div>
+                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: 1 }}>{u.l}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="event-card-detail">
-            <Clock size={13} />{formatTime(event.startTime)} – {formatTime(event.endTime)}
+        )}
+
+        {/* Live / Past status */}
+        {isLive && (
+          <div style={{
+            background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
+            borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center', marginBottom: '0.75rem',
+          }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#22c55e' }}>🎉 Event is Live!</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Happening right now</div>
           </div>
-          <div className="event-card-detail">
-            <MapPin size={13} />{event.hall.name}
+        )}
+        {isPast && (
+          <div style={{
+            background: 'var(--ink)', border: '1px solid var(--border)',
+            borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center', marginBottom: '0.75rem',
+          }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>Event Ended</div>
           </div>
-          <div className="event-card-detail">
-            <User size={13} />{event.creator.name}
-          </div>
-          <div className="event-card-detail">
-            <Users size={13} />{event._count?.rsvps ?? 0} RSVPs
-          </div>
-        </div>
-        <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+        )}
+
+        {/* Action buttons */}
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
           {event.inviteType === 'PUBLIC' ? (
-            <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => { setShowRsvp(!showRsvp); setMsg(''); }}>
-              {showRsvp ? 'Cancel' : '+ RSVP'}
-            </button>
+            <motion.button
+              className="btn btn-primary btn-sm"
+              style={{ flex: 1 }}
+              onClick={() => { setShowRsvp(!showRsvp); setMsg(''); }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              {showRsvp ? 'Cancel' : timeLeft > 0 ? '+ Reserve Spot' : '+ RSVP'}
+            </motion.button>
           ) : (
-            <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => { setShowInviteReq(!showInviteReq); setMsg(''); }}>
+            <motion.button
+              className="btn btn-secondary btn-sm"
+              style={{ flex: 1 }}
+              onClick={() => { setShowInviteReq(!showInviteReq); setMsg(''); }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
               {showInviteReq ? 'Cancel' : <><Lock size={12} style={{ marginRight: 4 }} />Request Invite</>}
-            </button>
+            </motion.button>
           )}
         </div>
 
         {/* RSVP form */}
         {showRsvp && (
-          <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+          >
             {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
             <input className="form-input" placeholder="Your name" value={rsvpForm.name} onChange={e => setRsvpForm(p => ({ ...p, name: e.target.value }))} />
             <input className="form-input" placeholder="Email" type="email" value={rsvpForm.email} onChange={e => setRsvpForm(p => ({ ...p, email: e.target.value }))} />
@@ -363,12 +547,17 @@ function EventCard({ event, index }: { event: Event; index: number }) {
             <button className="btn btn-primary btn-sm btn-full" onClick={submitRsvp} disabled={loading}>
               {loading ? 'Submitting...' : 'Submit RSVP'}
             </button>
-          </div>
+          </motion.div>
         )}
 
         {/* Invite request form */}
         {showInviteReq && (
-          <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+          >
             {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
             <input className="form-input" placeholder="Your name" value={inviteForm.name} onChange={e => setInviteForm(p => ({ ...p, name: e.target.value }))} />
             <input className="form-input" placeholder="Email" type="email" value={inviteForm.email} onChange={e => setInviteForm(p => ({ ...p, email: e.target.value }))} />
@@ -376,9 +565,9 @@ function EventCard({ event, index }: { event: Event; index: number }) {
             <button className="btn btn-secondary btn-sm btn-full" onClick={submitInvite} disabled={loading}>
               {loading ? 'Submitting...' : 'Request Invite'}
             </button>
-          </div>
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
