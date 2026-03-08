@@ -1570,3 +1570,58 @@ kbd {
   0% { transform: translateX(-50%) translateY(120%); opacity: 0; }
   100% { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
+
+/* ============================================
+   BENTO GRID — Dashboard layout
+   ============================================ */
+.bento-item {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.bento-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    350px circle at var(--mx) var(--my),
+    rgba(190, 242, 100, 0.06),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.bento-item:hover {
+  border-color: var(--border-bright);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.bento-item:hover::before {
+  opacity: 1;
+}
+
+/* Link rows inside bento */
+.bento-item a:hover {
+  border-color: var(--border-bright) !important;
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .bento-grid > * {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+}
