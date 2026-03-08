@@ -436,11 +436,11 @@ function EventCard({ event, index }: { event: Event; index: number }) {
         </p>
 
         {/* Meta info */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CalendarDays size={12} />{formatDate(event.startTime)}</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12} />{formatTime(event.startTime)} – {formatTime(event.endTime)}</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={12} />{event.hall.name}</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={12} />{event._count?.rsvps ?? 0} RSVPs</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.9rem' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)' }}><CalendarDays size={13} style={{ color: 'var(--text-muted)' }} />{formatDate(event.startTime)}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)' }}><Clock size={13} style={{ color: 'var(--text-muted)' }} />{formatTime(event.startTime)} – {formatTime(event.endTime)}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500 }}><MapPin size={13} style={{ color: 'var(--text-muted)' }} />{event.hall.name}</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500 }}><Users size={13} style={{ color: 'var(--text-muted)' }} />{event._count?.rsvps ?? 0} RSVPs</span>
         </div>
 
         {/* Countdown Timer */}
