@@ -28,7 +28,6 @@ export default function NewEventPage() {
     const [conflicts, setConflicts] = useState<ConflictEvent[]>([]);
     const [conflictTarget, setConflictTarget] = useState<string | null>(null);
     const [overrideReason, setOverrideReason] = useState('');
-    const [hallSearch, setHallSearch] = useState('');
     const [step, setStep] = useState(1); // 1: form, 2: conflict, 3: override
 
     useEffect(() => {
@@ -105,11 +104,6 @@ export default function NewEventPage() {
         } catch (e: any) { setError(e.response?.data?.error || 'Error submitting request.'); }
         setLoading(false);
     };
-
-    const filteredHalls = halls.filter(h =>
-        h.name.toLowerCase().includes(hallSearch.toLowerCase()) ||
-        h.location.toLowerCase().includes(hallSearch.toLowerCase())
-    );
 
     const selectedHall = halls.find(h => h.id === form.hallId);
 
@@ -261,17 +255,12 @@ export default function NewEventPage() {
                         <div className="card">
                             <div className="card-header"><span className="card-title">Hall & Time</span></div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div className="form-group">
-                                    <label className="form-label">Search Hall</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <input type="text" className="form-input" placeholder="Search by name or location..." value={hallSearch} onChange={e => setHallSearch(e.target.value)} />
-                                    </div>
-                                </div>
+
                                 <div className="form-group">
                                     <label className="form-label">Select Hall *</label>
                                     <select className="form-select" value={form.hallId} onChange={e => f('hallId', e.target.value)} required>
                                         <option value="">— Select a hall —</option>
-                                        {filteredHalls.map(h => (
+                                        {halls.map(h => (
                                             <option key={h.id} value={h.id}>
                                                 {h.name} — Capacity: {h.capacity} · {h.location}
                                             </option>

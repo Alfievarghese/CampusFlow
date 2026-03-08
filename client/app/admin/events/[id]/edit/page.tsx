@@ -27,7 +27,6 @@ export default function EditEventPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
-    const [hallSearch, setHallSearch] = useState('');
 
     useEffect(() => {
         Promise.all([
@@ -58,10 +57,6 @@ export default function EditEventPage() {
     const f = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
 
     const selectedHall = halls.find(h => h.id === form.hallId);
-    const filteredHalls = halls.filter(h =>
-        h.name.toLowerCase().includes(hallSearch.toLowerCase()) ||
-        h.location.toLowerCase().includes(hallSearch.toLowerCase())
-    );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -171,13 +166,11 @@ export default function EditEventPage() {
                     <div className="card" style={{ padding: '1.5rem' }}>
                         <h3 style={{ marginBottom: '1rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>Hall & Time</h3>
 
-                        <label className="form-label">Search Hall</label>
-                        <input className="form-input" value={hallSearch} onChange={e => setHallSearch(e.target.value)} placeholder="Search by name or location..." />
 
                         <label className="form-label" style={{ marginTop: '1rem' }}>Select Hall *</label>
                         <select className="form-input" value={form.hallId} onChange={e => f('hallId', e.target.value)} required>
                             <option value="">Choose a hall...</option>
-                            {filteredHalls.map(h => (
+                            {halls.map(h => (
                                 <option key={h.id} value={h.id}>{h.name} — Capacity: {h.capacity} · {h.location}</option>
                             ))}
                         </select>
