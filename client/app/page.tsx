@@ -187,7 +187,7 @@ export default function HomePage() {
       <BannerCarousel />
 
       {/* HERO with animated background paths */}
-      <section className="hero" style={{ position: 'relative', zIndex: 1, overflow: 'hidden', minHeight: '100vh' }}>
+      <section className="hero" style={{ position: 'relative', zIndex: 1, overflow: 'hidden', padding: '5rem 0 6rem 0' }}>
         <BackgroundPaths />
         <div className="container hero-content" style={{ position: 'relative', zIndex: 2 }}>
           <div className="anim-fade hero-float" style={{ maxWidth: '660px' }}>
@@ -213,10 +213,26 @@ export default function HomePage() {
       {/* EVENT DISCOVERY */}
       <section id="events" style={{ padding: '5rem 0', background: 'var(--ink-2)' }}>
         <div className="container">
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
+          <div style={{ marginBottom: '2rem' }}>
             <div>
               <h2 className="anim-slide-up" style={{ marginBottom: '0.5rem' }}>Upcoming Events</h2>
               <p className="text-secondary anim-slide-up anim-delay-1">{events.length} events scheduled across campus</p>
+            </div>
+          </div>
+
+          {/* Controls: Categories & Search */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
+            {/* Category filters */}
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  className={`btn btn-sm ${category === cat ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setCategory(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
             {/* Search */}
             <input
@@ -224,21 +240,8 @@ export default function HomePage() {
               placeholder="Search events..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ maxWidth: '240px' }}
+              style={{ maxWidth: '240px', width: '100%' }}
             />
-          </div>
-
-          {/* Category filters */}
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                className={`btn btn-sm ${category === cat ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
           </div>
 
           {loading ? (
@@ -485,27 +488,28 @@ function EventCard({ event, index }: { event: Event; index: number }) {
           </div>
         )}
 
-        {/* Live / Past status */}
-        {isLive && (
-          <div style={{
-            background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
-            borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center', marginBottom: '0.75rem',
-          }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#22c55e' }}>🎉 Event is Live!</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Happening right now</div>
-          </div>
-        )}
-        {isPast && (
-          <div style={{
-            background: 'var(--ink)', border: '1px solid var(--border)',
-            borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center', marginBottom: '0.75rem',
-          }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>Event Ended</div>
-          </div>
-        )}
+        {/* Live / Past status and actions */}
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {isLive && (
+            <div style={{
+              background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
+              borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#22c55e' }}>🎉 Event is Live!</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Happening right now</div>
+            </div>
+          )}
+          {isPast && (
+            <div style={{
+              background: 'var(--ink)', border: '1px solid var(--border)',
+              borderRadius: '0.5rem', padding: '0.5rem', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>Event Ended</div>
+            </div>
+          )}
 
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
           {event.inviteType === 'PUBLIC' ? (
             <motion.button
               className="btn btn-primary btn-sm"
@@ -567,6 +571,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
             </button>
           </motion.div>
         )}
+        </div>
       </div>
     </motion.div>
   );
