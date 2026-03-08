@@ -136,13 +136,13 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
 });
 
 // PATCH /api/events/:id - Update event
-router.patch('/:id', authenticate, requireAdmin, eventUpload, async (req, res) => {
+router.patch('/:id', authenticate, requireAdmin, async (req, res) => {
     const { data: existing } = await supabase.from('Event').select('*').eq('id', req.params.id).single();
     if (!existing) return res.status(404).json({ error: 'Event not found.' });
     if (existing.createdBy !== req.user.id && req.user.role !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Not authorized to edit this event.' });
     if (existing.status === 'CANCELLED') return res.status(400).json({ error: 'Cannot edit a cancelled event.' });
 
-    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance } = req.body;
+    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, posterUrl, bannerUrl } = req.body;
     const newStart = startTime ? new Date(startTime) : new Date(existing.startTime);
     const newEnd = endTime ? new Date(endTime) : new Date(existing.endTime);
     const newHallId = hallId || existing.hallId;
@@ -156,8 +156,8 @@ router.patch('/:id', authenticate, requireAdmin, eventUpload, async (req, res) =
         }
     }
 
-    const posterUrl = (await uploadToSupabase(req.files?.poster?.[0], 'poster')) || existing.posterUrl;
-    const bannerUrl = (await uploadToSupabase(req.files?.banner?.[0], 'banner')) || existing.bannerUrl;
+    const finalPosterUrl = posterUrl !== undefined ? posterUrl : existing.posterUrl;
+    const finalBannerUrl = bannerUrl !== undefined ? bannerUrl : existing.bannerUrl;
 
     const { data: updated, error } = await supabase.from('Event').update({
         title: title || existing.title,
@@ -168,8 +168,8 @@ router.patch('/:id', authenticate, requireAdmin, eventUpload, async (req, res) =
         category: category || existing.category,
         inviteType: inviteType || existing.inviteType,
         expectedAttendance: expectedAttendance !== undefined ? parseInt(expectedAttendance) : existing.expectedAttendance,
-        posterUrl,
-        bannerUrl,
+        posterUrl: finalPosterUrl,
+        bannerUrl: finalBannerUrl,
         updatedAt: new Date().toISOString(),
     }).eq('id', req.params.id).select(EVENT_SELECT).single();
 
