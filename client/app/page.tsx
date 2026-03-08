@@ -5,8 +5,8 @@ import dynamic from 'next/dynamic';
 import api from '@/lib/api';
 import { CalendarDays, Clock, MapPin, User, Users, Globe, Lock, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
 
-// Dynamic import to prevent SSR issues with Three.js WebGL
-const AuroraBackground = dynamic(() => import('@/components/AuroraBackground'), { ssr: false });
+// Dynamic import to prevent SSR issues with framer-motion
+const BackgroundPaths = dynamic(() => import('@/components/BackgroundPaths'), { ssr: false });
 
 interface Event {
   id: string;
@@ -185,8 +185,8 @@ export default function HomePage() {
       {/* BANNER CAROUSEL */}
       <BannerCarousel />
 
-      {/* AURORA BACKGROUND — renders behind hero */}
-      <AuroraBackground />
+      {/* ANIMATED BACKGROUND PATHS — renders behind hero */}
+      <BackgroundPaths />
 
       {/* HERO */}
       <section className="hero" style={{ position: 'relative', zIndex: 1 }}>
