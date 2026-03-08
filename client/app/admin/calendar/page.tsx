@@ -88,7 +88,7 @@ export default function CalendarPage() {
                 <div className="modal-overlay" onClick={() => setSelected(null)}>
                     <div className="modal" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>{selected.title}</h3>
+                            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--text-primary)', lineHeight: 1.2 }}>{selected.title}</h3>
                             <button className="btn btn-ghost btn-sm" onClick={() => setSelected(null)}><X size={16} /></button>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

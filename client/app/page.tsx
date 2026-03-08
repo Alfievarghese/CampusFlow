@@ -96,9 +96,11 @@ function BannerCarousel() {
           <div className="banner-content">
             <span className="banner-category">{b.category}</span>
             <h2 className="banner-title">{b.title}</h2>
-            <p className="banner-meta">
-              <CalendarDays size={14} /> {formatDate(b.startTime)} &middot; {formatTime(b.startTime)} – {formatTime(b.endTime)} &middot; {b.hall.name}
-            </p>
+            <div className="banner-meta" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', marginTop: '0.5rem' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)' }}><CalendarDays size={14} /> {formatDate(b.startTime)}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)' }}>{formatTime(b.startTime)} – {formatTime(b.endTime)}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-sans)', fontWeight: 500 }}>&middot; {b.hall.name}</span>
+            </div>
           </div>
         </Link>
       )) : FALLBACK_SLIDES.map((s, i) => (

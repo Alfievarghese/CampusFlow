@@ -368,6 +368,8 @@ kbd {
   font-family: var(--font-sans);
   font-size: 0.88rem;
   font-weight: 600;
+  line-height: 1.5;
+  min-height: 42px;
   cursor: pointer;
   border: none;
   outline: none;
@@ -428,7 +430,8 @@ kbd {
 .btn-sm {
   padding: 0.5rem 0.9rem;
   font-size: 0.8rem;
-  line-height: 1.4;
+  line-height: 1.5;
+  min-height: 36px;
   justify-content: center;
 }
 
@@ -469,6 +472,8 @@ kbd {
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 0.9rem;
+  line-height: 1.5;
+  min-height: 44px;
   outline: none;
   width: 100%;
   transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
@@ -711,11 +716,10 @@ kbd {
 }
 
 .event-card-title {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
   color: var(--text-primary);
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 .event-card-meta {
@@ -1657,4 +1661,49 @@ kbd {
   25% { transform: translate(20px, 20px) scale(1.1) rotate(-90deg); border-radius: 25%; }
   50% { transform: translate(0, -40px) scale(1.3) rotate(-180deg); border-radius: 100%; }
   75% { transform: translate(-20px, -20px) scale(0.9) rotate(-270deg); border-radius: 75%; }
+}
+
+/* ============================================
+   FULLCALENDAR OVERRIDES
+   ============================================ */
+.fc {
+  font-family: var(--font-sans);
+}
+
+.fc-toolbar-title {
+  font-family: var(--font-display) !important;
+  font-size: 1.8rem !important;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.fc-event {
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.fc-event-title {
+  font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  padding: 0.1rem 0.2rem;
+}
+
+.fc-col-header-cell-cushion, 
+.fc-timegrid-slot-label-cushion {
+  font-family: var(--font-mono);
+  color: var(--text-secondary) !important;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.fc-daygrid-day-number {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-primary) !important;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: var(--border) !important;
 }
