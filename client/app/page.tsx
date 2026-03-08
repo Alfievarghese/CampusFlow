@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 
 // Dynamic import to prevent SSR issues with framer-motion
 const BackgroundPaths = dynamic(() => import('@/components/BackgroundPaths'), { ssr: false });
+import AnimatedLoadingSkeleton from '@/components/AnimatedLoadingSkeleton';
 
 interface Event {
   id: string;
@@ -245,8 +246,8 @@ export default function HomePage() {
           </div>
 
           {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
-              <div className="spinner" style={{ width: 40, height: 40 }} />
+            <div style={{ margin: '2rem 0' }}>
+              <AnimatedLoadingSkeleton />
             </div>
           ) : events.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '5rem 1rem', color: 'var(--text-muted)' }}>
