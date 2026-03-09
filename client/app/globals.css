@@ -470,8 +470,8 @@ kbd {
   border-radius: var(--radius);
   padding: 0.65rem 0.9rem;
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.95rem;
   line-height: 1.5;
   min-height: 44px;
   outline: none;
