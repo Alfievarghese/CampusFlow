@@ -199,7 +199,7 @@ export default function HomePage() {
               Live Campus Events Platform
             </div>
             <h1 style={{ marginBottom: '1.25rem' }}>
-              Your College,<br />
+              Our College,<br />
               <em>All In One Place.</em>
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: 1.7 }}>
@@ -513,37 +513,37 @@ function EventCard({ event, index }: { event: Event; index: number }) {
 
           {/* Action buttons */}
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {event.inviteType === 'PUBLIC' ? (
-            <motion.button
-              className="btn btn-primary btn-sm btn-full"
-              onClick={() => { setShowRsvp(true); setMsg(''); }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              + Reserve Spot
-            </motion.button>
-          ) : (
-            <motion.button
-              className="btn btn-secondary btn-sm btn-full"
-              onClick={() => { setShowInviteReq(true); setMsg(''); }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Lock size={12} style={{ marginRight: 4 }} />Request Invite
-            </motion.button>
-          )}
-        </div>
+            {event.inviteType === 'PUBLIC' ? (
+              <motion.button
+                className="btn btn-primary btn-sm btn-full"
+                onClick={() => { setShowRsvp(true); setMsg(''); }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                + Reserve Spot
+              </motion.button>
+            ) : (
+              <motion.button
+                className="btn btn-secondary btn-sm btn-full"
+                onClick={() => { setShowInviteReq(true); setMsg(''); }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Lock size={12} style={{ marginRight: 4 }} />Request Invite
+              </motion.button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* RSVP Modal */}
       {showRsvp && (
         <div className="modal-overlay" onClick={() => setShowRsvp(false)} style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(10,12,16,0.7)', backdropFilter: 'blur(6px)' }}>
-          <motion.div 
-            className="card" 
-            onClick={e => e.stopPropagation()} 
-            initial={{ opacity: 0, scale: 0.95, y: 10 }} 
-            animate={{ opacity: 1, scale: 1, y: 0 }} 
+          <motion.div
+            className="card"
+            onClick={e => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             style={{ width: '90%', maxWidth: '420px', padding: '1.75rem', background: 'var(--ink)' }}
           >
@@ -552,7 +552,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
               <button className="btn btn-ghost btn-sm" onClick={() => setShowRsvp(false)} style={{ padding: '0.3rem' }}>X</button>
             </div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>Reserve your spot for <strong>{event.title}</strong></p>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
               <div>
@@ -581,11 +581,11 @@ function EventCard({ event, index }: { event: Event; index: number }) {
       {/* Invite Request Modal */}
       {showInviteReq && (
         <div className="modal-overlay" onClick={() => setShowInviteReq(false)} style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(10,12,16,0.7)', backdropFilter: 'blur(6px)' }}>
-          <motion.div 
-            className="card" 
-            onClick={e => e.stopPropagation()} 
-            initial={{ opacity: 0, scale: 0.95, y: 10 }} 
-            animate={{ opacity: 1, scale: 1, y: 0 }} 
+          <motion.div
+            className="card"
+            onClick={e => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             style={{ width: '90%', maxWidth: '420px', padding: '1.75rem', background: 'var(--ink)' }}
           >
@@ -593,7 +593,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', color: 'var(--text-primary)' }}>Request Invite</h3>
               <button className="btn btn-ghost btn-sm" onClick={() => setShowInviteReq(false)} style={{ padding: '0.3rem' }}>X</button>
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {msg && <div className={`alert ${msg.startsWith('✓') ? 'alert-success' : 'alert-error'}`}>{msg}</div>}
               <div>
