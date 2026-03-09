@@ -203,7 +203,7 @@ export default function HomePage() {
               <em>All In One Place.</em>
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '2rem', lineHeight: 1.7 }}>
-              Discover events, book halls, and stay connected with everything happening on campus. Powered by CampusFlow.
+              Discover events, book halls, and stay connected with everything happening on campus.
             </p>
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <a href="#events" className="btn btn-primary btn-lg">Browse Events</a>
