@@ -536,6 +536,7 @@ function EventCard({ event, index }: { event: Event; index: number }) {
           </div>
         </div>
       </div>
+      </motion.div>
 
       {/* RSVP Modal */}
       {showRsvp && (
