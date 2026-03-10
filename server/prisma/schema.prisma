@@ -23,6 +23,31 @@ model User {
   events       Event[]
   auditLogs    AuditLog[]
   ConflictRequest ConflictRequest[]
+  orgMemberships  OrgMember[]
+  eventReports    EventReport[]
+}
+
+model Organization {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String?
+  logoUrl     String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  members     OrgMember[]
+  events      Event[]
+}
+
+model OrgMember {
+  id             String       @id @default(uuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  role           String       @default("MEMBER") // ORG_HEAD, MEMBER
+  permissions    String       @default("[]")     // JSON array: ["HOST_EVENTS","VIEW_REPORTS","EDIT_ORG","MANAGE_MEMBERS"]
+  createdAt      DateTime     @default(now())
+  @@unique([userId, organizationId])
 }
 
 model Hall {
@@ -45,13 +70,16 @@ model Event {
   hallId             String
   hall               Hall      @relation(fields: [hallId], references: [id])
   status             String    @default("CONFIRMED") // CONFIRMED, PENDING, CANCELLED, CONFLICT_REQUESTED
-  // Academic, Cultural, Sports, Technical, Workshop, Social, Other
   category           String
   inviteType         String    @default("PUBLIC") // PUBLIC, INVITE_ONLY
   expectedAttendance Int
   posterUrl          String?
-  bannerUrl          String?   // Optional wide banner image (1200x400) for homepage carousel
-  recurrenceRule     String?   // JSON: {type:"WEEKLY"|"MONTHLY"|"CUSTOM", interval:1, until:"date", days:[...]}
+  bannerUrl          String?
+  recurrenceRule     String?
+  hostEmail          String?
+  hostPhone          String?
+  organizationId     String?
+  organization       Organization? @relation(fields: [organizationId], references: [id])
   createdBy          String
   creator            User      @relation(fields: [createdBy], references: [id])
   createdAt          DateTime  @default(now())
@@ -59,15 +87,28 @@ model Event {
   conflictRequests   ConflictRequest[]
   rsvps              RSVP[]
   inviteRequests     InviteRequest[]
+  report             EventReport?
+}
+
+model EventReport {
+  id            String   @id @default(uuid())
+  eventId       String   @unique
+  event         Event    @relation(fields: [eventId], references: [id])
+  createdById   String
+  createdBy     User     @relation(fields: [createdById], references: [id])
+  responses     String   // JSON: questionnaire answers
+  reportFileUrl String?  // URL to generated .docx in Supabase Storage
+  status        String   @default("DRAFT") // DRAFT, GENERATED, ERROR
+  createdAt     DateTime @default(now())
 }
 
 model ConflictRequest {
   id              String   @id @default(uuid())
-  conflictEventId String   // The existing event that this request conflicts with
+  conflictEventId String
   event           Event    @relation(fields: [conflictEventId], references: [id])
   requestedById   String
   requestedBy     User     @relation(fields: [requestedById], references: [id])
-  newEventTitle   String   // Title of the new event requesting the slot
+  newEventTitle   String
   newEventStart   DateTime
   newEventEnd     DateTime
   hallId          String
@@ -81,9 +122,9 @@ model RSVP {
   id             String   @id @default(uuid())
   eventId        String
   event          Event    @relation(fields: [eventId], references: [id])
-  userIdentifier String   // Email
+  userIdentifier String
   userName       String
-  status         String   // INTERESTED, GOING
+  status         String
   createdAt      DateTime @default(now())
 
   @@unique([eventId, userIdentifier])
@@ -95,7 +136,7 @@ model InviteRequest {
   event         Event    @relation(fields: [eventId], references: [id])
   requesterName String
   requesterEmail String
-  requesterInfo String?  // Additional notes
+  requesterInfo String?
   status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
   comment       String?
   createdAt     DateTime @default(now())
@@ -107,7 +148,7 @@ model AuditLog {
   user      User?    @relation(fields: [userId], references: [id])
   action    String
   targetId  String?
-  details   String?  // JSON extra details
+  details   String?
   timestamp DateTime @default(now())
 }
 

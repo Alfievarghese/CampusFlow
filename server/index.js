@@ -15,6 +15,8 @@ const rsvpRoutes = require('./routes/rsvp.routes');
 const inviteRoutes = require('./routes/invite.routes');
 const adminRoutes = require('./routes/admin.routes');
 const auditRoutes = require('./routes/audit.routes');
+const orgRoutes = require('./routes/org.routes');
+const reportRoutes = require('./routes/report.routes');
 
 
 
@@ -73,6 +75,8 @@ app.use('/api/rsvp', rsvpRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/orgs', orgRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -330,16 +330,17 @@ function EventCard({ event, index }: { event: Event; index: number }) {
   };
 
   return (
-    <motion.div
-      className="event-card"
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30, delay: index * 0.08 }}
-      whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300, damping: 25 } }}
-      style={{ cursor: 'pointer' }}
-    >
-      {/* Image with gradient overlay */}
+    <>
+      <motion.div
+        className="event-card"
+        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30, delay: index * 0.08 }}
+        whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300, damping: 25 } }}
+        style={{ cursor: 'pointer' }}
+      >
+        {/* Image with gradient overlay */}
       <div style={{ position: 'relative', overflow: 'hidden' }}>
         {event.posterUrl ? (
           <motion.img
@@ -615,6 +616,6 @@ function EventCard({ event, index }: { event: Event; index: number }) {
           </motion.div>
         </div>
       )}
-    </motion.div>
+    </>
   );
 }
