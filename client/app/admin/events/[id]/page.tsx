@@ -99,7 +99,7 @@ export default function AdminEventDetailPage() {
                         ) : (
                             <Button disabled variant="outline" className="gap-2">Processing Report...</Button>
                         )
-                    ) : isPast && isCreator ? (
+                    ) : (isPast && isCreator) || (isPast && user?.role === 'SUPER_ADMIN') ? (
                         <Button onClick={() => setReportModalOpen(true)} className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
                             <Bot size={16} /> Generate AI Report
                         </Button>

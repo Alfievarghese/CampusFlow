@@ -40,11 +40,18 @@ export default function EditEventPage() {
             setHalls(hallsRes.data);
             if (orgsRes) setOrgs(orgsRes.data);
             const e = eventRes.data;
+            // Format datetime-local values in LOCAL timezone (not UTC)
+            const toLocalDT = (iso: string) => {
+                if (!iso) return '';
+                const d = new Date(iso);
+                const pad = (n: number) => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            };
             setForm({
                 title: e.title || '',
                 description: e.description || '',
-                startTime: e.startTime ? new Date(e.startTime).toISOString().slice(0, 16) : '',
-                endTime: e.endTime ? new Date(e.endTime).toISOString().slice(0, 16) : '',
+                startTime: toLocalDT(e.startTime),
+                endTime: toLocalDT(e.endTime),
                 hallId: e.hallId || '',
                 category: e.category || 'Academic',
                 inviteType: e.inviteType || 'PUBLIC',

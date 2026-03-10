@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
-import { PlusCircle, CalendarDays, Globe, Lock, RefreshCw, Edit2, Ban, X, AlertTriangle } from 'lucide-react';
+import { PlusCircle, CalendarDays, Globe, Lock, RefreshCw, Edit2, Ban, X, AlertTriangle, Eye, FileText } from 'lucide-react';
 
 interface Event {
     id: string; title: string; startTime: string; endTime: string;
     status: string; category: string; inviteType: string;
     hall: { name: string }; expectedAttendance: number;
     recurrenceRule?: string; _count: { rsvps: number };
+    hasReport?: boolean;
 }
 
 function formatDT(d: string) { return new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
@@ -76,7 +77,9 @@ export default function EventsPage() {
                                 {events.map(event => (
                                     <tr key={event.id}>
                                         <td>
-                                            {event.title}
+                                            <Link href={`/admin/events/${event.id}`} style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
+                                                {event.title}
+                                            </Link>
                                             {event.recurrenceRule && (
                                                 <span title="Recurring event" style={{ marginLeft: '0.5rem', display: 'inline-flex', verticalAlign: 'middle' }}>
                                                     <RefreshCw size={12} strokeWidth={1.75} style={{ color: 'var(--sky)' }} />
@@ -98,11 +101,21 @@ export default function EventsPage() {
                                         <td style={{ fontFamily: 'var(--font-mono)' }}>{event._count?.rsvps ?? 0}</td>
                                         <td><span className={`badge badge-${event.status.toLowerCase().replace('_', '-')}`}>{event.status}</span></td>
                                         <td>
-                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                <Link href={`/admin/events/${event.id}`} className="btn btn-ghost btn-sm"
+                                                    style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                    <Eye size={13} strokeWidth={1.75} /> View
+                                                </Link>
                                                 <Link href={`/admin/events/${event.id}/edit`} className="btn btn-ghost btn-sm"
                                                     style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                                                     <Edit2 size={13} strokeWidth={1.75} /> Edit
                                                 </Link>
+                                                {new Date() > new Date(event.endTime) && event.status !== 'CANCELLED' && (
+                                                    <Link href={`/admin/events/${event.id}`} className="btn btn-ghost btn-sm"
+                                                        style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--sky)' }}>
+                                                        <FileText size={13} strokeWidth={1.75} /> Report
+                                                    </Link>
+                                                )}
                                                 {event.status !== 'CANCELLED' && (
                                                     <button className="btn btn-danger btn-sm"
                                                         style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}
