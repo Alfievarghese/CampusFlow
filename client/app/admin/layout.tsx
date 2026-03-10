@@ -16,11 +16,13 @@ const NAV_ITEMS = [
     { href: '/admin/calendar', icon: Calendar, label: 'Common Calendar' },
     { href: '/admin/requests', icon: Inbox, label: 'Requests', badge: true },
     { href: '/admin/halls', icon: Building2, label: 'Venues' },
+    { href: '/admin/organizations', icon: Users, label: 'Organizations' },
     { href: '/admin/profile', icon: UserCircle, label: 'My Profile' },
 ];
 
 const SUPER_ADMIN_ITEMS = [
     { href: '/admin/users', icon: Users, label: 'Admin Users' },
+    { href: '/admin/reports', icon: ClipboardList, label: 'Reports' },
     { href: '/admin/audit', icon: ClipboardList, label: 'Audit Logs' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
 ];

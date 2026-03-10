@@ -33,7 +33,7 @@ async function uploadToSupabase(file, prefix) {
     return data.publicUrl;
 }
 
-const EVENT_SELECT = 'id, title, description, startTime, endTime, status, category, inviteType, expectedAttendance, posterUrl, bannerUrl, recurrenceRule, createdAt, updatedAt, createdBy, hallId, hall:Hall(id, name, capacity, location), creator:User(id, name, email)';
+const EVENT_SELECT = 'id, title, description, startTime, endTime, status, category, inviteType, expectedAttendance, posterUrl, bannerUrl, recurrenceRule, hostEmail, hostPhone, organizationId, createdAt, updatedAt, createdBy, hallId, hall:Hall(id, name, capacity, location), creator:User(id, name, email), organization:Organization(id, name)';
 
 // GET /api/events - Public list
 router.get('/', async (req, res) => {
@@ -79,7 +79,7 @@ router.get('/:id', async (req, res) => {
 
 // POST /api/events - Create event
 router.post('/', authenticate, requireAdmin, async (req, res) => {
-    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, recurrenceRule, posterUrl, bannerUrl } = req.body;
+    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, recurrenceRule, posterUrl, bannerUrl, hostEmail, hostPhone, organizationId } = req.body;
     if (!title || !startTime || !endTime || !hallId || !category) {
         return res.status(400).json({ error: 'title, startTime, endTime, hallId, category are required.' });
     }
@@ -124,6 +124,9 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
         recurrenceRule: recurrenceRule || null,
         posterUrl,
         bannerUrl,
+        hostEmail: hostEmail || null,
+        hostPhone: hostPhone || null,
+        organizationId: organizationId || null,
         status: 'CONFIRMED',
         createdBy: req.user.id,
         createdAt: new Date().toISOString(),
@@ -142,7 +145,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res) => {
     if (existing.createdBy !== req.user.id && req.user.role !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Not authorized to edit this event.' });
     if (existing.status === 'CANCELLED') return res.status(400).json({ error: 'Cannot edit a cancelled event.' });
 
-    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, posterUrl, bannerUrl } = req.body;
+    const { title, description, startTime, endTime, hallId, category, inviteType, expectedAttendance, posterUrl, bannerUrl, hostEmail, hostPhone, organizationId } = req.body;
     const newStart = startTime ? new Date(startTime) : new Date(existing.startTime);
     const newEnd = endTime ? new Date(endTime) : new Date(existing.endTime);
     const newHallId = hallId || existing.hallId;
@@ -170,6 +173,9 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res) => {
         expectedAttendance: expectedAttendance !== undefined ? parseInt(expectedAttendance) : existing.expectedAttendance,
         posterUrl: finalPosterUrl,
         bannerUrl: finalBannerUrl,
+        hostEmail: hostEmail !== undefined ? hostEmail : existing.hostEmail,
+        hostPhone: hostPhone !== undefined ? hostPhone : existing.hostPhone,
+        organizationId: organizationId !== undefined ? organizationId : existing.organizationId,
         updatedAt: new Date().toISOString(),
     }).eq('id', req.params.id).select(EVENT_SELECT).single();
 

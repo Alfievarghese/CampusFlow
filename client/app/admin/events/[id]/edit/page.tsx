@@ -6,6 +6,7 @@ import { uploadEventImage } from '@/lib/supabase';
 import { Save, ArrowLeft, AlertTriangle } from 'lucide-react';
 
 interface Hall { id: string; name: string; capacity: number; location: string; }
+interface Org { id: string; name: string; }
 
 const CATEGORIES = ['Academic', 'Cultural', 'Sports', 'Technical', 'Workshop', 'Social', 'Other'];
 
@@ -15,10 +16,12 @@ export default function EditEventPage() {
     const eventId = params.id as string;
 
     const [halls, setHalls] = useState<Hall[]>([]);
+    const [orgs, setOrgs] = useState<Org[]>([]);
     const [form, setForm] = useState({
         title: '', description: '', startTime: '', endTime: '',
         hallId: '', category: 'Academic', inviteType: 'PUBLIC',
         expectedAttendance: '',
+        hostEmail: '', hostPhone: '', organizationId: ''
     });
     const [existingPosterUrl, setExistingPosterUrl] = useState<string | null>(null);
     const [existingBannerUrl, setExistingBannerUrl] = useState<string | null>(null);
@@ -32,8 +35,10 @@ export default function EditEventPage() {
         Promise.all([
             api.get('/halls'),
             api.get(`/events/${eventId}`),
-        ]).then(([hallsRes, eventRes]) => {
+            api.get('/orgs').catch(() => api.get('/orgs/my/memberships').then(r => ({ data: r.data.map((m: any) => m.organization) }))),
+        ]).then(([hallsRes, eventRes, orgsRes]) => {
             setHalls(hallsRes.data);
+            if (orgsRes) setOrgs(orgsRes.data);
             const e = eventRes.data;
             setForm({
                 title: e.title || '',
@@ -44,6 +49,9 @@ export default function EditEventPage() {
                 category: e.category || 'Academic',
                 inviteType: e.inviteType || 'PUBLIC',
                 expectedAttendance: e.expectedAttendance?.toString() || '',
+                hostEmail: e.hostEmail || '',
+                hostPhone: e.hostPhone || '',
+                organizationId: e.organizationId || '',
             });
             setExistingPosterUrl(e.posterUrl || null);
             setExistingBannerUrl(e.bannerUrl || null);
@@ -143,6 +151,25 @@ export default function EditEventPage() {
                                 </select>
                             </div>
                         </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+                            <div>
+                                <label className="form-label">Host Email</label>
+                                <input className="form-input" type="email" value={form.hostEmail} onChange={e => f('hostEmail', e.target.value)} placeholder="host@example.com" />
+                            </div>
+                            <div>
+                                <label className="form-label">Host Phone</label>
+                                <input className="form-input" type="tel" value={form.hostPhone} onChange={e => f('hostPhone', e.target.value)} placeholder="+91 1234567890" />
+                            </div>
+                        </div>
+
+                        <label className="form-label" style={{ marginTop: '1rem' }}>Organization (Optional)</label>
+                        <select className="form-input" value={form.organizationId} onChange={e => f('organizationId', e.target.value)}>
+                            <option value="">— None / Independent —</option>
+                            {orgs.map(o => (
+                                <option key={o.id} value={o.id}>{o.name}</option>
+                            ))}
+                        </select>
 
                         <label className="form-label" style={{ marginTop: '1rem' }}>Event Poster</label>
                         <input type="file" accept="image/*" className="form-input" onChange={e => setPoster(e.target.files?.[0] || null)} />

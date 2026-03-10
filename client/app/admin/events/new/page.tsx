@@ -6,6 +6,7 @@ import { uploadEventImage } from '@/lib/supabase';
 import { Plus, AlertTriangle } from 'lucide-react';
 
 interface Hall { id: string; name: string; capacity: number; location: string; }
+interface Org { id: string; name: string; }
 interface ConflictEvent { id: string; title: string; startTime: string; endTime: string; hall: string; host: string; }
 
 const CATEGORIES = ['Academic', 'Cultural', 'Sports', 'Technical', 'Workshop', 'Social', 'Other'];
@@ -14,11 +15,13 @@ const RECURRENCE_TYPES = ['NONE', 'WEEKLY', 'MONTHLY', 'CUSTOM'];
 export default function NewEventPage() {
     const router = useRouter();
     const [halls, setHalls] = useState<Hall[]>([]);
+    const [orgs, setOrgs] = useState<Org[]>([]);
     const [form, setForm] = useState({
         title: '', description: '', startTime: '', endTime: '',
         hallId: '', category: 'Academic', inviteType: 'PUBLIC',
         expectedAttendance: '', recurrenceType: 'NONE',
         recurrenceInterval: '1', recurrenceUntil: '',
+        hostEmail: '', hostPhone: '', organizationId: ''
     });
     const [poster, setPoster] = useState<File | null>(null);
     const [banner, setBanner] = useState<File | null>(null);
@@ -32,6 +35,10 @@ export default function NewEventPage() {
 
     useEffect(() => {
         api.get('/halls').then(res => setHalls(res.data)).catch(() => { });
+        api.get('/orgs').then(res => setOrgs(res.data)).catch(() => {
+            // fallback for non-super admins if needed
+            api.get('/orgs/my/memberships').then(res => setOrgs(res.data.map((m: any) => m.organization))).catch(() => { });
+        });
     }, []);
 
     const f = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
@@ -205,6 +212,25 @@ export default function NewEventPage() {
                                             <option value="INVITE_ONLY">Invite Only</option>
                                         </select>
                                     </div>
+                                </div>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label">Host Email</label>
+                                        <input className="form-input" type="email" placeholder="host@example.com" value={form.hostEmail} onChange={e => f('hostEmail', e.target.value)} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Host Phone</label>
+                                        <input className="form-input" type="tel" placeholder="+91 1234567890" value={form.hostPhone} onChange={e => f('hostPhone', e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Organization <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(Optional)</span></label>
+                                    <select className="form-select" value={form.organizationId} onChange={e => f('organizationId', e.target.value)}>
+                                        <option value="">— None / Independent —</option>
+                                        {orgs.map(o => (
+                                            <option key={o.id} value={o.id}>{o.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Event Poster</label>
