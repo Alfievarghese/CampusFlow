@@ -8,6 +8,8 @@ interface User {
     email: string;
     role: 'SUPER_ADMIN' | 'ADMIN';
     isApproved: boolean;
+    systemPermissions?: string[];
+    orgMemberships?: any[];
 }
 
 interface AuthContextType {

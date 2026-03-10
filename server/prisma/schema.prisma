@@ -25,6 +25,8 @@ model User {
   ConflictRequest ConflictRequest[]
   orgMemberships  OrgMember[]
   eventReports    EventReport[]
+  powerRank       Int        @default(0)
+  systemPermissions String   @default("[]")
 }
 
 model Organization {
@@ -38,6 +40,17 @@ model Organization {
   events      Event[]
 }
 
+model OrgRole {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  name           String
+  permissions    String       @default("[]")
+  powerRank      Int          @default(0)
+  createdAt      DateTime     @default(now())
+  members        OrgMember[]
+}
+
 model OrgMember {
   id             String       @id @default(uuid())
   userId         String
@@ -45,7 +58,10 @@ model OrgMember {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
   role           String       @default("MEMBER") // ORG_HEAD, MEMBER
+  orgRoleId      String?
+  orgRole        OrgRole?     @relation(fields: [orgRoleId], references: [id])
   permissions    String       @default("[]")     // JSON array: ["HOST_EVENTS","VIEW_REPORTS","EDIT_ORG","MANAGE_MEMBERS"]
+  powerRank      Int          @default(0)
   createdAt      DateTime     @default(now())
   @@unique([userId, organizationId])
 }
