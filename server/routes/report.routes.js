@@ -46,7 +46,7 @@ router.post('/:eventId', authenticate, requireAdmin, async (req, res) => {
     // Generate AI report via OpenRouter
     try {
         const prompt = buildReportPrompt(event, responses);
-        
+
         const aiResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -72,7 +72,7 @@ router.post('/:eventId', authenticate, requireAdmin, async (req, res) => {
         let reportJson = {};
         try {
             reportJson = JSON.parse(aiText);
-        } catch(e) {
+        } catch (e) {
             console.error("AI returned invalid JSON", aiText);
             throw new Error("Failed to parse AI JSON");
         }
@@ -159,7 +159,7 @@ router.get('/:eventId', authenticate, async (req, res) => {
 // ─── GET /api/reports — List all reports (SUPER_ADMIN / ORG_HEAD) ───
 router.get('/', authenticate, requireAdmin, async (req, res) => {
     const { category, search, from, to } = req.query;
-    
+
     let query = supabase.from('EventReport')
         .select('id, eventId, status, reportFileUrl, createdAt, event:Event(id, title, category, startTime, endTime, organizationId, hall:Hall(name)), createdBy:User(id, name)')
         .order('createdAt', { ascending: false });
@@ -202,6 +202,8 @@ Generate a comprehensive Post-Event Completion Report for the following campus e
 8. **Additional Notes:** ${responses.additionalNotes || 'Not provided'}
 
 ## Instructions
-You MUST return ONLY a JSON object mapping to the sections outlined above. Do not wrap in markdown \`\`\`json. Just literal valid JSON.
+You MUST return ONLY a JSON object mapping to the sections outlined above. Do not wrap in markdown code blocks. Just literal valid JSON.
+`;
+}
 
 module.exports = router;
