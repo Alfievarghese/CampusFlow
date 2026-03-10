@@ -79,7 +79,7 @@ export default function AdminEventDetailPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <span className={\`text-[0.65rem] px-2.5 py-1 rounded-full font-bold \${event.status === 'APPROVED' ? 'bg-lime-500/10 text-lime-600' : event.status === 'PENDING' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'}\`}>
+                        <span className={`text-[0.65rem] px-2.5 py-1 rounded-full font-bold ${event.status === 'APPROVED' ? 'bg-lime-500/10 text-lime-600' : event.status === 'PENDING' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'}`}>
                             {event.status}
                         </span>
                         <span className="text-[0.65rem] px-2.5 py-1 rounded-full font-bold bg-secondary text-secondary-foreground">{event.category}</span>
