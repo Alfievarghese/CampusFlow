@@ -164,12 +164,12 @@ export default function EditEventPage() {
 
                     {/* Right column */}
                     <div className="card" style={{ padding: '1.5rem' }}>
-                        <h3 style={{ marginBottom: '1rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>Hall & Time</h3>
+                        <h3 style={{ marginBottom: '1rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>Venue & Time</h3>
 
 
-                        <label className="form-label" style={{ marginTop: '1rem' }}>Select Hall *</label>
+                        <label className="form-label" style={{ marginTop: '1rem' }}>Select Venue *</label>
                         <select className="form-input" value={form.hallId} onChange={e => f('hallId', e.target.value)} required>
-                            <option value="">Choose a hall...</option>
+                            <option value="">Choose a venue...</option>
                             {halls.map(h => (
                                 <option key={h.id} value={h.id}>{h.name} — Capacity: {h.capacity} · {h.location}</option>
                             ))}
@@ -177,7 +177,7 @@ export default function EditEventPage() {
 
                         {selectedHall && (
                             <div className="alert alert-info" style={{ marginTop: '0.75rem' }}>
-                                Hall capacity: <strong>{selectedHall.capacity}</strong> people · {selectedHall.location}
+                                Venue capacity: <strong>{selectedHall.capacity}</strong> people · {selectedHall.location}
                             </div>
                         )}
 

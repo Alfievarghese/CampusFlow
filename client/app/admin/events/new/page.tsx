@@ -113,8 +113,8 @@ export default function NewEventPage() {
             <div>
                 <div className="page-header">
                     <div>
-                        <h1 className="page-title">Hall Conflict Detected</h1>
-                        <p className="page-subtitle">The selected hall is already booked. Review conflicts below.</p>
+                        <h1 className="page-title">Venue Conflict Detected</h1>
+                        <p className="page-subtitle">The selected venue is already booked. Review conflicts below.</p>
                     </div>
                 </div>
                 {warning && <div className="alert alert-warning mb-2">{warning}</div>}
@@ -137,7 +137,7 @@ export default function NewEventPage() {
                                     {new Date(c.startTime).toLocaleString()} – {new Date(c.endTime).toLocaleTimeString()}
                                 </div>
                                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                                    Hall: {c.hall} · Host: {c.host}
+                                    Venue: {c.hall} · Host: {c.host}
                                 </div>
                             </div>
                         </div>
@@ -169,7 +169,7 @@ export default function NewEventPage() {
             <div className="page-header">
                 <div>
                     <h1 className="page-title">Create Event</h1>
-                    <p className="page-subtitle">Book a hall and schedule a new campus event</p>
+                    <p className="page-subtitle">Book a venue and schedule a new campus event</p>
                 </div>
             </div>
 
@@ -253,13 +253,13 @@ export default function NewEventPage() {
                     {/* Right column */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <div className="card">
-                            <div className="card-header"><span className="card-title">Hall & Time</span></div>
+                            <div className="card-header"><span className="card-title">Venue & Time</span></div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
                                 <div className="form-group">
-                                    <label className="form-label">Select Hall *</label>
+                                    <label className="form-label">Select Venue *</label>
                                     <select className="form-select" value={form.hallId} onChange={e => f('hallId', e.target.value)} required>
-                                        <option value="">— Select a hall —</option>
+                                        <option value="">— Select a venue —</option>
                                         {halls.map(h => (
                                             <option key={h.id} value={h.id}>
                                                 {h.name} — Capacity: {h.capacity} · {h.location}
@@ -269,7 +269,7 @@ export default function NewEventPage() {
                                 </div>
                                 {selectedHall && (
                                     <div className="alert alert-info">
-                                        Hall capacity: <strong>{selectedHall.capacity}</strong> people · {selectedHall.location}
+                                        Venue capacity: <strong>{selectedHall.capacity}</strong> people · {selectedHall.location}
                                     </div>
                                 )}
                                 <div className="form-group">
@@ -284,7 +284,7 @@ export default function NewEventPage() {
                                     <label className="form-label">Expected Attendance</label>
                                     <input className="form-input" type="number" min={0} placeholder="0" value={form.expectedAttendance} onChange={e => f('expectedAttendance', e.target.value)} />
                                     {selectedHall && parseInt(form.expectedAttendance) > selectedHall.capacity && (
-                                        <span className="form-error" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><AlertTriangle size={12} /> Exceeds hall capacity of {selectedHall.capacity}!</span>
+                                        <span className="form-error" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><AlertTriangle size={12} /> Exceeds venue capacity of {selectedHall.capacity}!</span>
                                     )}
                                 </div>
                             </div>

@@ -15,7 +15,7 @@ const NAV_ITEMS = [
     { href: '/admin/events', icon: CalendarDays, label: 'My Events' },
     { href: '/admin/calendar', icon: Calendar, label: 'Common Calendar' },
     { href: '/admin/requests', icon: Inbox, label: 'Requests', badge: true },
-    { href: '/admin/halls', icon: Building2, label: 'Halls' },
+    { href: '/admin/halls', icon: Building2, label: 'Venues' },
     { href: '/admin/profile', icon: UserCircle, label: 'My Profile' },
 ];
 

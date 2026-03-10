@@ -49,7 +49,7 @@ export default function CalendarPage() {
             <div className="page-header">
                 <div>
                     <h1 className="page-title">{view === 'common' ? 'Common Calendar' : 'My Calendar'}</h1>
-                    <p className="page-subtitle">All booked events across campus halls</p>
+                    <p className="page-subtitle">All booked events across campus venues</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                     <button className={`btn ${view === 'common' ? 'btn-primary' : 'btn-secondary'} btn-sm`} onClick={() => setView('common')}>Common</button>
@@ -107,7 +107,7 @@ export default function CalendarPage() {
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                     <Building2 size={14} strokeWidth={1.75} />
-                                    Hall: <strong>{selected.extendedProps.hall}</strong>
+                                    Venue: <strong>{selected.extendedProps.hall}</strong>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                     <User size={14} strokeWidth={1.75} />
