@@ -90,7 +90,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     if (start < new Date()) return res.status(400).json({ error: 'Cannot book a time in the past.' });
 
     const { data: hall } = await supabase.from('Hall').select('capacity, isActive').eq('id', hallId).single();
-    if (!hall || !hall.isActive) return res.status(404).json({ error: 'Hall not found.' });
+    if (!hall || !hall.isActive) return res.status(404).json({ error: 'Venue not found.' });
 
     const attendance = parseInt(expectedAttendance) || 0;
     const capacityWarning = attendance > hall.capacity ? `Expected attendance (${attendance}) exceeds hall capacity (${hall.capacity}).` : null;
@@ -107,7 +107,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     } else {
         conflictResult = await checkConflicts(hallId, start, end);
         if (conflictResult.hasConflict) {
-            return res.status(409).json({ error: 'Hall is already booked for this time slot.', conflicts: conflictResult.conflictingEvents, capacityWarning, canRequestOverride: true });
+            return res.status(409).json({ error: 'Venue is already booked for this time slot.', conflicts: conflictResult.conflictingEvents, capacityWarning, canRequestOverride: true });
         }
     }
 
@@ -152,7 +152,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res) => {
     if (startTime || endTime || hallId) {
         const conflict = await checkConflicts(newHallId, newStart, newEnd, existing.id);
         if (conflict.hasConflict) {
-            return res.status(409).json({ error: 'Hall conflict detected.', conflicts: conflict.conflictingEvents, canRequestOverride: true });
+            return res.status(409).json({ error: 'Venue conflict detected.', conflicts: conflict.conflictingEvents, canRequestOverride: true });
         }
     }
 

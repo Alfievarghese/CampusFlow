@@ -28,10 +28,10 @@ export default function HallsPage() {
         try {
             if (editId) {
                 await api.patch(`/halls/${editId}`, form);
-                setMsg('Hall updated.');
+                setMsg('Venue updated.');
             } else {
                 await api.post('/halls', form);
-                setMsg('Hall created.');
+                setMsg('Venue created.');
             }
             setShowForm(false);
             setEditId(null);
@@ -41,7 +41,7 @@ export default function HallsPage() {
     };
 
     const deactivate = async (id: string) => {
-        try { await api.delete(`/halls/${id}`); setMsg('Hall deactivated.'); fetchHalls(); }
+        try { await api.delete(`/halls/${id}`); setMsg('Venue deactivated.'); fetchHalls(); }
         catch (e: any) { setMsg(e.response?.data?.error || 'Error'); }
     };
 
@@ -55,12 +55,12 @@ export default function HallsPage() {
         <div>
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Hall Management</h1>
-                    <p className="page-subtitle">View and manage campus halls and venues</p>
+                    <h1 className="page-title">Venue Management</h1>
+                    <p className="page-subtitle">View and manage campus venues and locations</p>
                 </div>
                 <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', capacity: '', location: '', description: '' }); }}>
                     <PlusCircle size={16} strokeWidth={1.75} style={{ marginRight: '0.4rem' }} />
-                    Add Hall
+                    Add Venue
                 </button>
             </div>
 
@@ -109,24 +109,24 @@ export default function HallsPage() {
                     {halls.length === 0 && (
                         <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
                             <Landmark size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>No halls added yet. Add the first hall above.</p>
+                            <p>No venues added yet. Add the first venue above.</p>
                         </div>
                     )}
                 </div>
             )}
 
-            {/* Hall Form Modal */}
+            {/* Venue Form Modal */}
             {showForm && (
                 <div className="modal-overlay" onClick={() => setShowForm(false)}>
                     <div className="modal" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>{editId ? 'Edit Hall' : 'Add New Hall'}</h3>
+                            <h3>{editId ? 'Edit Venue' : 'Add New Venue'}</h3>
                             <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}><X size={16} /></button>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div className="form-group">
-                                <label className="form-label">Hall Name *</label>
-                                <input className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Main Auditorium" />
+                                <label className="form-label">Venue Name *</label>
+                                <input className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Main Auditorium, Central Courtyard" />
                             </div>
                             <div className="form-row">
                                 <div className="form-group">
@@ -140,12 +140,12 @@ export default function HallsPage() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Description</label>
-                                <textarea className="form-textarea" rows={2} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Additional notes about this hall..." />
+                                <textarea className="form-textarea" rows={2} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Additional notes about this venue..." />
                             </div>
                             {msg && <div className="alert alert-error">{msg}</div>}
                             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                                 <button className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
-                                <button className="btn btn-primary" onClick={submit}>{editId ? 'Save Changes' : 'Create Hall'}</button>
+                                <button className="btn btn-primary" onClick={submit}>{editId ? 'Save Changes' : 'Create Venue'}</button>
                             </div>
                         </div>
                     </div>

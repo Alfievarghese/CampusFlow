@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 // GET /api/halls/:id
 router.get('/:id', async (req, res) => {
     const { data: hall } = await supabase.from('Hall').select('*').eq('id', req.params.id).single();
-    if (!hall) return res.status(404).json({ error: 'Hall not found.' });
+    if (!hall) return res.status(404).json({ error: 'Venue not found.' });
     res.json(hall);
 });
 
@@ -51,7 +51,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res) => {
 router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
     await supabase.from('Hall').update({ isActive: false }).eq('id', req.params.id);
     await auditLog(req.user.id, 'HALL_DEACTIVATED', req.params.id);
-    res.json({ message: 'Hall deactivated.' });
+    res.json({ message: 'Venue deactivated.' });
 });
 
 module.exports = router;
