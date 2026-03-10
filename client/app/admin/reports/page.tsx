@@ -105,7 +105,7 @@ export default function ReportsPage() {
                                             <div className="font-medium">{report.createdBy?.name || 'Unknown'}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={\`text-[0.65rem] px-2.5 py-1 rounded-full font-bold \${report.status === 'GENERATED' ? 'bg-lime-500/10 text-lime-600' : report.status === 'DRAFT' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'}\`}>
+                                            <span className={`text-[0.65rem] px-2.5 py-1 rounded-full font-bold ${report.status === 'GENERATED' ? 'bg-lime-500/10 text-lime-600' : report.status === 'DRAFT' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'}`}>
                                                 {report.status}
                                             </span>
                                         </td>
