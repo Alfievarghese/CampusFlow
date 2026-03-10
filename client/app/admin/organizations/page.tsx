@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
-import { Building2, PlusCircle, Users, Pencil, PowerOff, X, Shield, ChevronRight, Mail, Phone, Crown } from 'lucide-react';
+import { Building2, PlusCircle, Users, X, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Org { id: string; name: string; description?: string; isActive: boolean; members?: OrgMember[]; }
@@ -78,21 +78,7 @@ export default function OrganizationsPage() {
         } catch (e: any) { setMsg(e.response?.data?.error || 'Error'); }
     };
 
-    const updateMemberPerms = async (memberId: string, permissions: string[]) => {
-        if (!showDetail) return;
-        try {
-            await api.patch(`/orgs/${showDetail}/members/${memberId}`, { permissions });
-            openDetail(showDetail);
-        } catch { }
-    };
 
-    const updateMemberRole = async (memberId: string, role: string) => {
-        if (!showDetail) return;
-        try {
-            await api.patch(`/orgs/${showDetail}/members/${memberId}`, { role });
-            openDetail(showDetail);
-        } catch { }
-    };
 
     const removeMember = async (memberId: string) => {
         if (!showDetail) return;

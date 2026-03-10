@@ -2,9 +2,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
-import { CalendarDays, Clock, Building2, User, Search, Plus, ChevronRight, Calendar as CalendarIcon, AlignLeft, X } from 'lucide-react';
+import { CalendarDays, Building2, User, Search, Plus, ChevronRight, Calendar as CalendarIcon, AlignLeft, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, isSameDay, parseISO } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 interface CalEvent {
     id: string; title: string; startTime: string; endTime: string;
