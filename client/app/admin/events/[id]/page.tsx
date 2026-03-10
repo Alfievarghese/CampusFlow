@@ -87,7 +87,7 @@ export default function AdminEventDetailPage() {
                     <h1 className="text-3xl font-bold tracking-tight mb-1">{event.title}</h1>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => router.push(\`/admin/events/\${id}/edit\`)} className="gap-2">
+                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2">
                         <Pencil size={16} /> Edit Event
                     </Button>
                     
