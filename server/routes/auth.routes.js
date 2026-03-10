@@ -44,8 +44,10 @@ router.post('/register', async (req, res) => {
         role: isSuperAdmin ? 'SUPER_ADMIN' : 'ADMIN',
         isApproved: isSuperAdmin,
         isActive: true,
+        powerRank: isSuperAdmin ? 100 : 0, // Default SuperAdmin to rank 100
+        systemPermissions: JSON.stringify(isSuperAdmin ? ['CREATE_ORGANIZATIONS', 'ASSIGN_POWERS'] : []),
         createdAt: new Date().toISOString(),
-    }).select('id, name, email, role, isApproved').single();
+    }).select('id, name, email, role, isApproved, powerRank, systemPermissions').single();
 
     if (error) {
         console.error('[REGISTER ERROR]', error);
@@ -86,7 +88,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-        { userId: user.id, role: user.role },
+        { userId: user.id, role: user.role, powerRank: user.powerRank, systemPermissions: user.systemPermissions },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
@@ -101,6 +103,8 @@ router.post('/login', async (req, res) => {
             email: user.email,
             role: user.role,
             isApproved: user.isApproved,
+            powerRank: user.powerRank,
+            systemPermissions: JSON.parse(user.systemPermissions || '[]'),
         },
     });
 });
@@ -114,6 +118,8 @@ router.get('/me', authenticate, async (req, res) => {
         email: user.email,
         role: user.role,
         isApproved: user.isApproved,
+        powerRank: user.powerRank,
+        systemPermissions: JSON.parse(user.systemPermissions || '[]'),
         createdAt: user.createdAt,
     });
 });

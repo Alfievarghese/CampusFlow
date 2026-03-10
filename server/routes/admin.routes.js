@@ -7,22 +7,43 @@ const { auditLog } = require('../lib/audit');
 
 const router = express.Router();
 
+// Helper: Check if user has system permission
+function hasSystemPerm(user, perm) {
+    if (user.role === 'SUPER_ADMIN') return true;
+    try {
+        const perms = JSON.parse(user.systemPermissions || '[]');
+        return perms.includes(perm);
+    } catch { return false; }
+}
+
 // GET /api/admin/users
-router.get('/users', authenticate, requireAdmin, requireSuperAdmin, async (req, res) => {
+router.get('/users', authenticate, requireAdmin, async (req, res) => {
     const { data: users, error } = await supabase
         .from('User')
-        .select('id, name, email, role, isApproved, isActive, createdAt')
+        .select('id, name, email, role, isApproved, isActive, createdAt, powerRank, systemPermissions')
         .order('createdAt', { ascending: false });
     if (error) return res.status(500).json({ error: error.message });
     res.json(users);
 });
 
 // POST /api/admin/users - Manually create admin
-router.post('/users', authenticate, requireAdmin, requireSuperAdmin, async (req, res) => {
-    const { name, email, password, role } = req.body;
+router.post('/users', authenticate, requireAdmin, async (req, res) => {
+    if (!hasSystemPerm(req.user, 'ASSIGN_POWERS')) {
+        return res.status(403).json({ error: 'You do not have permission to assign powers or create users.' });
+    }
+
+    const { name, email, password, role, powerRank, systemPermissions } = req.body;
     if (!name || !email || !password) return res.status(400).json({ error: 'Name, email, and password are required.' });
     if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
     const assignedRole = ['ADMIN', 'SUPER_ADMIN'].includes(role) ? role : 'ADMIN';
+
+    // Hierarchy Check
+    const targetRank = parseInt(powerRank) || 0;
+    if (req.user.role !== 'SUPER_ADMIN') {
+        if (targetRank > req.user.powerRank) {
+            return res.status(403).json({ error: `Cannot assign a power rank (${targetRank}) higher than your own (${req.user.powerRank}).` });
+        }
+    }
 
     const { data: existing } = await supabase.from('User').select('id').eq('email', email).single();
     if (existing) return res.status(409).json({ error: 'An account with this email already exists.' });
@@ -30,12 +51,53 @@ router.post('/users', authenticate, requireAdmin, requireSuperAdmin, async (req,
     const passwordHash = await bcrypt.hash(password, 12);
     const { data: user, error } = await supabase.from('User').insert({
         id: uuidv4(), name, email, passwordHash, role: assignedRole, isApproved: true, isActive: true,
+        powerRank: targetRank,
+        systemPermissions: JSON.stringify(systemPermissions || []),
         createdAt: new Date().toISOString(),
-    }).select('id, name, email, role, isApproved, isActive, createdAt').single();
+    }).select('id, name, email, role, isApproved, isActive, createdAt, powerRank, systemPermissions').single();
 
     if (error) return res.status(500).json({ error: error.message });
-    await auditLog(req.user.id, 'ADMIN_CREATED_MANUALLY', user.id, { name, email, role: assignedRole });
+    await auditLog(req.user.id, 'ADMIN_CREATED_MANUALLY', user.id, { name, email, role: assignedRole, powerRank: targetRank });
     res.status(201).json(user);
+});
+
+// PATCH /api/admin/users/:id - Edit powers securely
+router.patch('/users/:id', authenticate, requireAdmin, async (req, res) => {
+    if (!hasSystemPerm(req.user, 'ASSIGN_POWERS')) {
+        return res.status(403).json({ error: 'You do not have permission to modify users.' });
+    }
+
+    const { powerRank, systemPermissions, role } = req.body;
+
+    const { data: targetUser } = await supabase.from('User').select('id, powerRank, role').eq('id', req.params.id).single();
+    if (!targetUser) return res.status(404).json({ error: 'User not found.' });
+
+    if (req.user.role !== 'SUPER_ADMIN') {
+        if (targetUser.powerRank >= req.user.powerRank && req.user.id !== targetUser.id) {
+            return res.status(403).json({ error: 'You cannot modify a user with equal or higher power rank.' });
+        }
+        if (powerRank !== undefined && parseInt(powerRank) > req.user.powerRank) {
+            return res.status(403).json({ error: `Cannot assign power rank higher than your own (${req.user.powerRank}).` });
+        }
+        if (role === 'SUPER_ADMIN') {
+            return res.status(403).json({ error: 'Only a Super Admin can grant Super Admin role.' });
+        }
+    }
+
+    const updateData = {};
+    if (powerRank !== undefined) updateData.powerRank = parseInt(powerRank);
+    if (systemPermissions) updateData.systemPermissions = JSON.stringify(systemPermissions);
+    if (role && ['ADMIN', 'SUPER_ADMIN'].includes(role)) updateData.role = role;
+
+    const { data: updated, error } = await supabase.from('User')
+        .update(updateData)
+        .eq('id', req.params.id)
+        .select('id, name, email, role, isApproved, isActive, createdAt, powerRank, systemPermissions')
+        .single();
+
+    if (error) return res.status(500).json({ error: error.message });
+    await auditLog(req.user.id, 'ADMIN_POWERS_UPDATED', req.params.id, updateData);
+    res.json(updated);
 });
 
 // PATCH /api/admin/users/:id/approve
