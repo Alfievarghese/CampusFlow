@@ -60,3 +60,7 @@ yarn-error.log*
 # TypeScript incremental build cache
 *.tsbuildinfo
 next-env.d.ts
+
+# AI Skills and prompts (do not push)
+SKILLS/
+humanizer-main/
