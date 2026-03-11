@@ -31,10 +31,16 @@ router.post('/:eventId', authenticate, requireAdmin, async (req, res) => {
 
     const { data: existingReport } = await supabase.from('EventReport')
         .select('id, status').eq('eventId', req.params.eventId).single();
-    if (existingReport) return res.status(409).json({
-        error: 'A report already exists for this event.',
-        report: existingReport
-    });
+    if (existingReport) {
+        if (existingReport.status === 'GENERATED' && existingReport.reportFileUrl) {
+            return res.status(409).json({
+                error: 'A report already exists for this event.',
+                report: existingReport
+            });
+        }
+        // If it's DRAFT or FAILED, delete it and start fresh
+        await supabase.from('EventReport').delete().eq('id', existingReport.id);
+    }
 
     const reportId = uuidv4();
     const { error: insertErr } = await supabase.from('EventReport').insert({

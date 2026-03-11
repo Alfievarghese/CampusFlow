@@ -98,22 +98,26 @@ export default function AdminEventDetailPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center justify-center gap-5 z-10 w-full">
-                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2.5 px-6 h-12 rounded-full border-white/20 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white shadow-lg shadow-black/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} style={{ padding: '0 1.5rem' }} className="gap-2.5 h-12 rounded-full border-white/20 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white shadow-lg shadow-black/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                         <Pencil size={18} /> <span>Edit Event</span>
                     </Button>
                     
                     {report ? (
                         report.reportFileUrl ? (
-                            <Button onClick={() => window.open(report.reportFileUrl, '_blank')} className="gap-2.5 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                            <Button onClick={() => window.open(report.reportFileUrl, '_blank')} style={{ padding: '0 1.5rem' }} className="gap-2.5 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                                 <FileText size={18} /> <span>Download Report</span>
                             </Button>
+                        ) : report.status === 'FAILED' ? (
+                            <Button onClick={() => setReportModalOpen(true)} style={{ padding: '0 1.5rem' }} className="gap-2.5 h-12 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 shadow-none hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                                <Bot size={18} /> <span>Retry AI Report</span>
+                            </Button>
                         ) : (
-                            <Button disabled className="gap-2.5 px-6 h-12 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shadow-none opacity-80 cursor-not-allowed flex items-center justify-center">
+                            <Button disabled style={{ padding: '0 1.5rem' }} className="gap-2.5 h-12 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shadow-none opacity-80 cursor-not-allowed flex items-center justify-center">
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-300"></div> <span>Processing Report...</span>
                             </Button>
                         )
                     ) : (isPast && isCreator) || (isPast && user?.role === 'SUPER_ADMIN') ? (
-                        <Button onClick={() => setReportModalOpen(true)} className="gap-2.5 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                        <Button onClick={() => setReportModalOpen(true)} style={{ padding: '0 1.5rem' }} className="gap-2.5 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                             <Bot size={18} /> <span>Generate AI Report</span>
                         </Button>
                     ) : null}
