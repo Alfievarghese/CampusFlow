@@ -91,38 +91,38 @@ export default function AdminEventDetailPage() {
                             {event.category?.name || event.category}
                         </span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-6 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent pb-1" style={{ fontFamily: 'var(--font-display)', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.15))' }}>
+                    <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent pb-1" style={{ fontFamily: 'var(--font-display)', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.15))', letterSpacing: '0.01em' }}>
                         {event.title}
                     </h1>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-4 z-10">
-                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2 px-6 h-12 rounded-full border-white/20 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white shadow-lg shadow-black/30 hover:-translate-y-1 transition-all duration-300">
-                        <Pencil size={16} /> Edit Event
+                <div className="flex flex-wrap items-center justify-center gap-5 z-10 w-full">
+                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2.5 px-6 h-12 rounded-full border-white/20 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white shadow-lg shadow-black/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                        <Pencil size={18} /> <span>Edit Event</span>
                     </Button>
                     
                     {report ? (
                         report.reportFileUrl ? (
-                            <Button onClick={() => window.open(report.reportFileUrl, '_blank')} className="gap-2 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300">
-                                <FileText size={16} /> Download Report
+                            <Button onClick={() => window.open(report.reportFileUrl, '_blank')} className="gap-2.5 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                                <FileText size={18} /> <span>Download Report</span>
                             </Button>
                         ) : (
-                            <Button disabled className="gap-2 px-6 h-12 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shadow-none opacity-80 cursor-not-allowed">
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-300"></div> Processing Report...
+                            <Button disabled className="gap-2.5 px-6 h-12 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shadow-none opacity-80 cursor-not-allowed flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-300"></div> <span>Processing Report...</span>
                             </Button>
                         )
                     ) : (isPast && isCreator) || (isPast && user?.role === 'SUPER_ADMIN') ? (
-                        <Button onClick={() => setReportModalOpen(true)} className="gap-2 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300">
-                            <Bot size={16} /> Generate AI Report
+                        <Button onClick={() => setReportModalOpen(true)} className="gap-2.5 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                            <Bot size={18} /> <span>Generate AI Report</span>
                         </Button>
                     ) : null}
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                <div className="md:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <div className="md:col-span-2 space-y-8">
                     {event.posterUrl && (
-                        <div className="rounded-xl overflow-hidden border bg-secondary/20 aspect-video md:aspect-[21/9] relative">
+                        <div className="rounded-[2rem] overflow-hidden border border-white/5 bg-white/5 aspect-video md:aspect-[21/9] relative shadow-2xl">
                             <img src={event.posterUrl} alt={event.title} className="w-full h-full object-cover" />
                         </div>
                     )}
@@ -133,11 +133,11 @@ export default function AdminEventDetailPage() {
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="bento-item space-y-4 relative overflow-hidden">
+                <div className="space-y-8">
+                    <div className="bento-item space-y-5 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-                        <h3 className="text-lg font-semibold border-b border-border/50 pb-3">Event Details</h3>
-                        <div className="space-y-4 text-sm relative z-10">
+                        <h3 className="text-xl font-bold border-b border-white/10 pb-4 tracking-tight">Event Details</h3>
+                        <div className="space-y-5 text-sm relative z-10">
                             <div className="flex items-start gap-3">
                                 <CalendarDays size={16} className="text-primary mt-0.5" />
                                 <div>
@@ -159,10 +159,10 @@ export default function AdminEventDetailPage() {
                         </div>
                     </div>
 
-                    <div className="bento-item space-y-4 relative overflow-hidden">
+                    <div className="bento-item space-y-5 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-                        <h3 className="text-lg font-semibold border-b border-border/50 pb-3">Contact Info</h3>
-                        <div className="space-y-4 text-sm relative z-10">
+                        <h3 className="text-xl font-bold border-b border-white/10 pb-4 tracking-tight">Contact Info</h3>
+                        <div className="space-y-5 text-sm relative z-10">
                             <div className="flex items-center gap-3">
                                 <User size={16} className="text-primary" />
                                 <div><span className="font-medium">{event.creator?.name || 'N/A'}</span> <span className="text-muted-foreground">(Organizer)</span></div>
