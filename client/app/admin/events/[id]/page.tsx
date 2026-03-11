@@ -76,31 +76,43 @@ export default function AdminEventDetailPage() {
                 <button onClick={() => router.back()} className="flex items-center hover:text-foreground transition-colors"><ChevronLeft size={16} /> Back</button>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-[0.65rem] px-2.5 py-1 rounded-full font-bold ${event.status === 'APPROVED' ? 'bg-lime-500/10 text-lime-600' : event.status === 'PENDING' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'}`}>
+            <div className="flex flex-col items-center justify-center gap-6 mt-12 mb-12 relative text-center">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
+                <div className="flex flex-col items-center z-10 w-full">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <span className={`text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest ${
+                            event.status === 'APPROVED' ? 'bg-lime-500/10 text-lime-400 border border-lime-500/20' :
+                            event.status === 'PENDING' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                            'bg-red-500/10 text-red-400 border border-red-500/20'
+                        }`}>
                             {event.status}
                         </span>
-                        <span className="text-[0.65rem] px-2.5 py-1 rounded-full font-bold bg-secondary/50 border border-border text-secondary-foreground">{event.category}</span>
+                        <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold tracking-widest bg-white/5 border border-white/10 text-foreground uppercase backdrop-blur-md">
+                            {event.category}
+                        </span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">{event.title}</h1>
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-6 bg-gradient-to-br from-white via-white/90 to-white/40 bg-clip-text text-transparent pb-1" style={{ fontFamily: 'var(--font-display)', filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.5))' }}>
+                        {event.title}
+                    </h1>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2 border-border-bright hover:bg-secondary/50 transition-colors">
+
+                <div className="flex flex-wrap items-center justify-center gap-4 z-10">
+                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2 px-6 h-12 rounded-full border-white/10 bg-white/5 hover:bg-white/10 backdrop-blur text-foreground shadow-lg shadow-black/20 hover:-translate-y-1 transition-all duration-300">
                         <Pencil size={16} /> Edit Event
                     </Button>
                     
                     {report ? (
                         report.reportFileUrl ? (
-                            <Button onClick={() => window.open(report.reportFileUrl, '_blank')} className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
+                            <Button onClick={() => window.open(report.reportFileUrl, '_blank')} className="gap-2 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300">
                                 <FileText size={16} /> Download Report
                             </Button>
                         ) : (
-                            <Button disabled variant="outline" className="gap-2">Processing Report...</Button>
+                            <Button disabled className="gap-2 px-6 h-12 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shadow-none opacity-80 cursor-not-allowed">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-300"></div> Processing Report...
+                            </Button>
                         )
                     ) : (isPast && isCreator) || (isPast && user?.role === 'SUPER_ADMIN') ? (
-                        <Button onClick={() => setReportModalOpen(true)} className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25 border-0 hover:scale-105 transition-all">
+                        <Button onClick={() => setReportModalOpen(true)} className="gap-2 px-6 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] border-0 hover:-translate-y-1 transition-all duration-300">
                             <Bot size={16} /> Generate AI Report
                         </Button>
                     ) : null}
@@ -205,9 +217,9 @@ export default function AdminEventDetailPage() {
                         </div>
                     </div>
                     
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setReportModalOpen(false)} disabled={generating}>Cancel</Button>
-                        <Button onClick={handleGenerateReport} disabled={generating} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2">
+                    <DialogFooter className="gap-3 sm:space-x-0 mt-2">
+                        <Button variant="outline" onClick={() => setReportModalOpen(false)} disabled={generating} className="border-border-bright hover:bg-secondary/50">Cancel</Button>
+                        <Button onClick={handleGenerateReport} disabled={generating} className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white gap-2 shadow-lg shadow-indigo-500/25 border-0 hover:scale-105 transition-all">
                             {generating ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div> : <Bot size={16} />}
                             {generating ? 'Generating Report...' : 'Generate AI Report'}
                         </Button>
