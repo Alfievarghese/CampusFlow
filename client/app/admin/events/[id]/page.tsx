@@ -82,12 +82,12 @@ export default function AdminEventDetailPage() {
                         <span className={`text-[0.65rem] px-2.5 py-1 rounded-full font-bold ${event.status === 'APPROVED' ? 'bg-lime-500/10 text-lime-600' : event.status === 'PENDING' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'}`}>
                             {event.status}
                         </span>
-                        <span className="text-[0.65rem] px-2.5 py-1 rounded-full font-bold bg-secondary text-secondary-foreground">{event.category}</span>
+                        <span className="text-[0.65rem] px-2.5 py-1 rounded-full font-bold bg-secondary/50 border border-border text-secondary-foreground">{event.category}</span>
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight mb-1">{event.title}</h1>
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">{event.title}</h1>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2">
+                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2 border-border-bright hover:bg-secondary/50 transition-colors">
                         <Pencil size={16} /> Edit Event
                     </Button>
                     
@@ -100,7 +100,7 @@ export default function AdminEventDetailPage() {
                             <Button disabled variant="outline" className="gap-2">Processing Report...</Button>
                         )
                     ) : (isPast && isCreator) || (isPast && user?.role === 'SUPER_ADMIN') ? (
-                        <Button onClick={() => setReportModalOpen(true)} className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
+                        <Button onClick={() => setReportModalOpen(true)} className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/25 border-0 hover:scale-105 transition-all">
                             <Bot size={16} /> Generate AI Report
                         </Button>
                     ) : null}
@@ -115,16 +115,17 @@ export default function AdminEventDetailPage() {
                         </div>
                     )}
                     
-                    <div className="card space-y-4 shadow-sm border p-6 rounded-xl bg-card">
-                        <h3 className="text-lg font-semibold flex items-center gap-2 border-b pb-2"><FileText size={18} /> Description</h3>
-                        <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{event.description || 'No description provided.'}</p>
+                    <div className="bento-item space-y-4">
+                        <h3 className="text-lg font-semibold flex items-center gap-2 border-b border-border/50 pb-3"><FileText size={18} className="text-primary" /> Description</h3>
+                        <p className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">{event.description || 'No description provided.'}</p>
                     </div>
                 </div>
 
                 <div className="space-y-6">
-                    <div className="card space-y-4 shadow-sm border p-6 rounded-xl bg-card">
-                        <h3 className="text-lg font-semibold border-b pb-2">Event Details</h3>
-                        <div className="space-y-3 text-sm">
+                    <div className="bento-item space-y-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                        <h3 className="text-lg font-semibold border-b border-border/50 pb-3">Event Details</h3>
+                        <div className="space-y-4 text-sm relative z-10">
                             <div className="flex items-start gap-3">
                                 <CalendarDays size={16} className="text-primary mt-0.5" />
                                 <div>
@@ -146,9 +147,10 @@ export default function AdminEventDetailPage() {
                         </div>
                     </div>
 
-                    <div className="card space-y-4 shadow-sm border p-6 rounded-xl bg-card">
-                        <h3 className="text-lg font-semibold border-b pb-2">Contact Info</h3>
-                        <div className="space-y-3 text-sm">
+                    <div className="bento-item space-y-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                        <h3 className="text-lg font-semibold border-b border-border/50 pb-3">Contact Info</h3>
+                        <div className="space-y-4 text-sm relative z-10">
                             <div className="flex items-center gap-3">
                                 <User size={16} className="text-primary" />
                                 <div><span className="font-medium">{event.creator?.name || 'N/A'}</span> <span className="text-muted-foreground">(Organizer)</span></div>

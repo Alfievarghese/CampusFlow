@@ -52,32 +52,33 @@ export default function ReportsPage() {
         <div className="flex flex-col gap-6" style={{ paddingBottom: '4rem' }}>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight mb-1">Event Reports</h1>
-                    <p className="text-muted-foreground text-sm">View and download AI-generated post-event completion reports.</p>
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">Event Reports</h1>
+                    <p className="text-muted-foreground text-base max-w-lg">View and download AI-generated post-event completion reports.</p>
                 </div>
-                <div className="flex items-center gap-2 w-full max-w-sm relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 w-full max-w-sm relative group">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                     <input 
-                        className="flex h-10 w-full rounded-md border border-input bg-background pl-9 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" 
+                        className="flex h-11 w-full rounded-full border border-input bg-secondary/30 pl-10 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground hover:border-white/20 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-sm" 
                         placeholder="Search by event or host..."
                         value={search} onChange={e => setSearch(e.target.value)}
                     />
                 </div>
             </div>
 
-            <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
+            <div className="bento-item p-0 overflow-hidden relative">
                 {loading ? (
-                    <div className="p-12 text-center text-muted-foreground flex flex-col items-center">
+                    <div className="p-16 text-center text-muted-foreground flex flex-col items-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
                         <p>Loading reports...</p>
                     </div>
                 ) : filtered.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center p-16 text-center">
-                        <div className="bg-secondary p-4 rounded-full mb-4">
-                            <FileText size={32} className="text-muted-foreground" />
+                    <div className="flex flex-col items-center justify-center p-20 text-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                        <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 rounded-full mb-5 border border-indigo-500/20">
+                            <FileText size={36} className="text-indigo-400" />
                         </div>
-                        <h3 className="text-lg font-semibold mb-2">No reports found</h3>
-                        <p className="text-muted-foreground text-sm max-w-md">There are currently no AI-generated post-event reports available matching your criteria.</p>
+                        <h3 className="text-xl font-bold mb-2 text-foreground">No reports found</h3>
+                        <p className="text-muted-foreground max-w-md leading-relaxed">We couldn't find any reports matching your search. Try adjusting your filters or generate a new report from an event page.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
