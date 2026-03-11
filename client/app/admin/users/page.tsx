@@ -74,40 +74,44 @@ export default function UsersPage() {
     };
 
     return (
-        <div>
-            <div className="page-header">
+        <div className="flex flex-col gap-6" style={{ paddingBottom: '4rem' }}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="page-title">Admin Users</h1>
-                    <p className="page-subtitle">Manage admin registrations and approvals</p>
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1" style={{ fontFamily: 'var(--font-display)' }}>Admin Users</h1>
+                    <p className="text-muted-foreground text-base max-w-lg">Manage admin registrations and platform access.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                    <span className="badge badge-pending">{users.filter(u => !u.isApproved && u.isActive).length} Pending</span>
-                    <span className="badge badge-confirmed">{users.filter(u => u.isApproved && u.isActive).length} Active</span>
+                <div className="flex items-center gap-3">
+                    <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20">{users.filter(u => !u.isApproved && u.isActive).length} Pending</span>
+                    <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest bg-lime-500/10 text-lime-400 border border-lime-500/20">{users.filter(u => u.isApproved && u.isActive).length} Active</span>
                     <button
-                        className="btn btn-primary"
+                        className="btn btn-primary ml-2 rounded-full px-5 hover:-translate-y-0.5 transition-transform"
                         onClick={() => { setShowAdd(true); setMsg(''); setForm(DEFAULT_FORM); }}
                         style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                     >
-                        <UserPlus size={16} strokeWidth={1.75} />
+                        <UserPlus size={16} strokeWidth={2} />
                         Add Admin
                     </button>
                 </div>
             </div>
 
-            {msg && <div className="alert alert-success mb-2">{msg}</div>}
+            {msg && <div className="alert alert-success mb-2 bg-lime-500/10 text-lime-400 border border-lime-500/20 backdrop-blur-sm rounded-lg p-3">{msg}</div>}
 
-            <div className="card">
+            <div className="bento-item p-0 overflow-hidden relative">
                 <div className="table-wrap">
                     {loading ? (
                         <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}><div className="spinner" /></div>
                     ) : users.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <Users size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>No admin users found.</p>
+                        <div className="flex flex-col items-center justify-center p-20 text-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                            <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 rounded-full mb-5 border border-indigo-500/20">
+                                <Users size={36} className="text-indigo-400" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 text-foreground">No admin users found</h3>
+                            <p className="text-muted-foreground max-w-md leading-relaxed">No users currently exist or match your criteria in the system.</p>
                         </div>
                     ) : (
-                        <table className="table">
-                            <thead>
+                        <table className="w-full text-sm text-left">
+                            <thead className="bg-white/5 backdrop-blur-sm text-white/70 uppercase text-xs font-bold tracking-wider border-b border-white/10">
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
@@ -119,52 +123,54 @@ export default function UsersPage() {
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y border-white/5">
                                 {users.map(u => (
-                                    <tr key={u.id}>
-                                        <td style={{ fontWeight: 500 }}>{u.name}</td>
-                                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>{u.email}</td>
-                                        <td>
-                                            <span className={`badge ${u.role === 'SUPER_ADMIN' ? 'badge-conflict' : 'badge-confirmed'}`} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', width: 'fit-content' }}>
-                                                {u.role === 'SUPER_ADMIN' ? <ShieldCheck size={11} /> : <UserCog size={11} />}
+                                    <tr key={u.id} className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-5 font-semibold text-foreground">{u.name}</td>
+                                        <td className="px-6 py-5 font-mono text-xs text-muted-foreground">{u.email}</td>
+                                        <td className="px-6 py-5">
+                                            <span className={`text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest ${u.role === 'SUPER_ADMIN' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-lime-500/10 text-lime-400 border border-lime-500/20'}`} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', width: 'fit-content' }}>
+                                                {u.role === 'SUPER_ADMIN' ? <ShieldCheck size={14} /> : <UserCog size={14} />}
                                                 {u.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin'}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td className="px-6 py-5">
                                             {!u.isActive ? (
-                                                <span className="badge badge-cancelled">Deactivated</span>
+                                                <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest bg-rose-500/10 text-rose-400 border border-rose-500/20">Deactivated</span>
                                             ) : u.isApproved ? (
-                                                <span className="badge badge-confirmed">Approved</span>
+                                                <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest bg-lime-500/10 text-lime-400 border border-lime-500/20">Approved</span>
                                             ) : (
-                                                <span className="badge badge-pending">Pending</span>
+                                                <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20">Pending</span>
                                             )}
                                         </td>
-                                        <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>
+                                        <td className="px-6 py-5 font-mono text-[0.7rem] text-muted-foreground">
                                             {new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                                         </td>
-                                        <td><span className="badge" style={{ background: 'var(--surface-hover)', borderRadius: '4px' }}>Rank {u.powerRank}</span></td>
-                                        <td>
-                                            <div style={{ display: 'flex', gap: '0.2rem', flexWrap: 'wrap', maxWidth: 150 }}>
-                                                {u.role === 'SUPER_ADMIN' ? <span className="badge badge-conflict" style={{ fontSize: '0.65rem' }}>ALL</span> :
-                                                    u.systemPermissions?.map(p => <span key={p} className="badge badge-info" style={{ fontSize: '0.65rem' }}>{p.replace('_', ' ')}</span>)}
+                                        <td className="px-6 py-5">
+                                            <span className="text-[0.65rem] px-3 py-1 rounded-md font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-white/80">Rank {u.powerRank}</span>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {u.role === 'SUPER_ADMIN' ? <span className="text-[0.6rem] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 uppercase font-bold tracking-wider">ALL</span> :
+                                                    u.systemPermissions?.map(p => <span key={p} className="text-[0.6rem] px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20 uppercase font-bold tracking-wider">{p.replace('_', ' ')}</span>)}
                                             </div>
                                         </td>
-                                        <td>
+                                        <td className="px-6 py-5 text-right">
                                             {u.role !== 'SUPER_ADMIN' && (
-                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                    <button className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                                                <div className="flex justify-end gap-2">
+                                                    <button className="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-full bg-white/5 hover:bg-white/10 text-white/80 border border-white/10 transition-all text-xs font-semibold"
                                                         onClick={() => { setEditingUser({ ...u, systemPermissions: u.systemPermissions || [] }); setShowEdit(true); setMsg(''); }}>
                                                         <UserCog size={13} /> Edit Powers
                                                     </button>
                                                     {!u.isApproved && u.isActive && (
-                                                        <button className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} onClick={() => approve(u.id)}>
+                                                        <button className="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-full bg-lime-500/10 hover:bg-lime-500/20 text-lime-400 border border-lime-500/20 transition-all text-xs font-semibold" onClick={() => approve(u.id)}>
                                                             <CheckCircle2 size={13} /> Approve
                                                         </button>
                                                     )}
                                                     {u.isActive && (
-                                                        <button className="btn btn-danger btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} onClick={() => reject(u.id)}>
+                                                        <button className="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all text-xs font-semibold" onClick={() => reject(u.id)}>
                                                             {u.isApproved ? <ShieldOff size={13} /> : <XCircle size={13} />}
-                                                            {u.isApproved ? 'Deac' : 'Rej'}
+                                                            {u.isApproved ? 'Deac' : 'Reject'}
                                                         </button>
                                                     )}
                                                 </div>
@@ -181,15 +187,15 @@ export default function UsersPage() {
             {/* Add Admin Modal */}
             {
                 showAdd && (
-                    <div className="modal-overlay" onClick={() => setShowAdd(false)}>
-                        <div className="modal" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <UserPlus size={18} /> Create Admin
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowAdd(false)}>
+                        <div className="bento-item w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+                            <div className="flex justify-between items-center border-b border-white/10 pb-4 mb-4">
+                                <h3 className="text-xl font-bold flex items-center gap-2 text-foreground tracking-tight">
+                                    <UserPlus className="text-primary" size={20} /> Create Admin
                                 </h3>
-                                <button className="btn btn-ghost btn-sm" onClick={() => setShowAdd(false)}><X size={16} /></button>
+                                <button className="text-muted-foreground hover:text-white transition-colors" onClick={() => setShowAdd(false)}><X size={20} /></button>
                             </div>
-                            <p className="text-secondary mb-2" style={{ fontSize: '0.85rem' }}>
+                            <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
                                 This admin will be immediately active and pre-approved — no registration flow required.
                             </p>
                             <form onSubmit={createAdmin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
