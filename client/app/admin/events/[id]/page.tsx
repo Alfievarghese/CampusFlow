@@ -76,28 +76,28 @@ export default function AdminEventDetailPage() {
                 <button onClick={() => router.back()} className="flex items-center hover:text-foreground transition-colors"><ChevronLeft size={16} /> Back</button>
             </div>
 
-            <div className="flex flex-col items-center justify-center gap-6 mt-12 mb-12 relative text-center">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
+                <div className="flex flex-col items-center justify-center gap-6 mt-12 mb-12 relative text-center">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
                 <div className="flex flex-col items-center z-10 w-full">
                     <div className="flex items-center justify-center gap-3 mb-4">
                         <span className={`text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest ${
-                            event.status === 'APPROVED' ? 'bg-lime-500/10 text-lime-400 border border-lime-500/20' :
+                            event.status === 'CONFIRMED' ? 'bg-lime-500/10 text-lime-400 border border-lime-500/20' :
                             event.status === 'PENDING' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                            'bg-red-500/10 text-red-400 border border-red-500/20'
+                            'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                         }`}>
                             {event.status}
                         </span>
-                        <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold tracking-widest bg-white/5 border border-white/10 text-foreground uppercase backdrop-blur-md">
-                            {event.category}
+                        <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold tracking-widest bg-white/10 border border-white/20 text-white uppercase backdrop-blur-md shadow-sm">
+                            {event.category?.name || event.category}
                         </span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-6 bg-gradient-to-br from-white via-white/90 to-white/40 bg-clip-text text-transparent pb-1" style={{ fontFamily: 'var(--font-display)', filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.5))' }}>
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-6 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent pb-1" style={{ fontFamily: 'var(--font-display)', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.15))' }}>
                         {event.title}
                     </h1>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-center gap-4 z-10">
-                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2 px-6 h-12 rounded-full border-white/10 bg-white/5 hover:bg-white/10 backdrop-blur text-foreground shadow-lg shadow-black/20 hover:-translate-y-1 transition-all duration-300">
+                    <Button variant="outline" onClick={() => router.push(`/admin/events/${id}/edit`)} className="gap-2 px-6 h-12 rounded-full border-white/20 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white shadow-lg shadow-black/30 hover:-translate-y-1 transition-all duration-300">
                         <Pencil size={16} /> Edit Event
                     </Button>
                     
