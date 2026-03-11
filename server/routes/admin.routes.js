@@ -23,7 +23,11 @@ router.get('/users', authenticate, requireAdmin, async (req, res) => {
         .select('id, name, email, role, isApproved, isActive, createdAt, powerRank, systemPermissions')
         .order('createdAt', { ascending: false });
     if (error) return res.status(500).json({ error: error.message });
-    res.json(users);
+    const formattedUsers = users.map(u => ({
+        ...u,
+        systemPermissions: typeof u.systemPermissions === 'string' ? JSON.parse(u.systemPermissions || '[]') : (u.systemPermissions || [])
+    }));
+    res.json(formattedUsers);
 });
 
 // POST /api/admin/users - Manually create admin
@@ -58,6 +62,8 @@ router.post('/users', authenticate, requireAdmin, async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message });
     await auditLog(req.user.id, 'ADMIN_CREATED_MANUALLY', user.id, { name, email, role: assignedRole, powerRank: targetRank });
+    
+    user.systemPermissions = typeof user.systemPermissions === 'string' ? JSON.parse(user.systemPermissions || '[]') : (user.systemPermissions || []);
     res.status(201).json(user);
 });
 
@@ -97,6 +103,8 @@ router.patch('/users/:id', authenticate, requireAdmin, async (req, res) => {
 
     if (error) return res.status(500).json({ error: error.message });
     await auditLog(req.user.id, 'ADMIN_POWERS_UPDATED', req.params.id, updateData);
+    
+    updated.systemPermissions = typeof updated.systemPermissions === 'string' ? JSON.parse(updated.systemPermissions || '[]') : (updated.systemPermissions || []);
     res.json(updated);
 });
 
