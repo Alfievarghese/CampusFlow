@@ -158,8 +158,8 @@ export default function OrganizationsPage() {
                     <p className="text-muted-foreground text-base max-w-lg">Manage campus organizations and their members.</p>
                 </div>
                 {(isSuperAdmin || isSystemAdmin) && (
-                    <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', description: '' }); }}>
-                        <PlusCircle size={16} strokeWidth={1.75} style={{ marginRight: '0.4rem' }} />
+                    <button className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-sm font-bold" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', description: '' }); }}>
+                        <PlusCircle size={18} strokeWidth={2} />
                         New Organization
                     </button>
                 )}
@@ -176,21 +176,23 @@ export default function OrganizationsPage() {
                     {orgs.map((org, i) => (
                         <motion.div
                             key={org.id}
-                            className={`bento-item anim-slide-up anim-delay-${Math.min(i + 1, 5)}`}
-                            whileHover={{ scale: 1.01, y: -2 }}
+                            className={`bento-item hover:bg-white/[0.03] transition-colors anim-slide-up anim-delay-${Math.min(i + 1, 5)}`}
+                            whileHover={{ scale: 1.02, y: -2 }}
                             style={{ cursor: 'pointer' }}
                             onClick={() => openDetail(org.id)}
                         >
-                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <div style={{ width: 44, height: 44, borderRadius: 'var(--radius)', background: 'var(--sky-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Building2 size={22} strokeWidth={1.5} style={{ color: 'var(--sky)' }} />
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="w-11 h-11 rounded-2xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20 shadow-sm">
+                                    <Building2 size={22} className="text-sky-400" />
                                 </div>
-                                <span className="badge badge-confirmed">Active</span>
+                                <span className="text-[0.65rem] px-2.5 py-1 rounded-full font-bold uppercase tracking-widest bg-lime-500/10 text-lime-400 border border-lime-500/20">
+                                    Active
+                                </span>
                             </div>
-                            <h3 style={{ fontFamily: 'var(--font-display)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{org.name}</h3>
-                            {org.description && <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.75rem', lineHeight: 1.5 }}>{org.description}</p>}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.78rem' }}>
-                                <ChevronRight size={14} /> View members & permissions
+                            <h3 className="font-display text-lg font-bold mb-2 text-foreground">{org.name}</h3>
+                            {org.description && <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-2">{org.description}</p>}
+                            <div className="flex items-center gap-2 text-xs font-bold text-sky-400 uppercase tracking-wider mt-auto pt-4 border-t border-border/50 transition-colors">
+                                View members & permissions <ChevronRight size={14} />
                             </div>
                         </motion.div>
                     ))}
@@ -210,24 +212,28 @@ export default function OrganizationsPage() {
             {/* Create/Edit Org Modal */}
             <AnimatePresence>
                 {showForm && (
-                    <div className="modal-overlay" onClick={() => setShowForm(false)}>
-                        <motion.div className="modal" onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
-                            <div className="modal-header">
-                                <h3>{editId ? 'Edit Organization' : 'New Organization'}</h3>
-                                <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}><X size={16} /></button>
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowForm(false)}>
+                        <motion.div className="bento-item max-w-md w-full p-6 shadow-2xl scale-100" onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
+                            <div className="flex items-center justify-between mb-4 pb-4 border-b border-border/50">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <Building2 size={20} className="text-sky-500" />
+                                    {editId ? 'Edit Organization' : 'New Organization'}
+                                </h3>
+                                <button className="text-muted-foreground hover:text-foreground hover:bg-white/10 rounded-full p-1 transition-colors" onClick={() => setShowForm(false)}><X size={18} /></button>
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                <div className="form-group">
-                                    <label className="form-label">Organization Name *</label>
-                                    <input className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. CS Department, Cultural Club" />
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Organization Name *</label>
+                                    <input className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. CS Department, Cultural Club" />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Description</label>
-                                    <textarea className="form-textarea" rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="What does this organization do?" />
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Description</label>
+                                    <textarea className="flex min-h-[80px] w-full rounded-2xl border border-input bg-secondary/30 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="What does this organization do?" />
                                 </div>
-                                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                                    <button className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
-                                    <button className="btn btn-primary" onClick={submit}>{editId ? 'Save' : 'Create'}</button>
+                                {msg && <div className="text-rose-400 text-sm font-medium p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">{msg}</div>}
+                                <div className="flex gap-3 justify-end mt-6 pt-4 border-t border-border/50">
+                                    <button className="h-10 px-5 rounded-full bg-white/5 hover:bg-white/10 text-foreground text-sm font-bold transition-colors" onClick={() => setShowForm(false)}>Cancel</button>
+                                    <button className="h-10 px-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-sm font-bold" onClick={submit}>{editId ? 'Save' : 'Create'}</button>
                                 </div>
                             </div>
                         </motion.div>
@@ -254,15 +260,15 @@ export default function OrganizationsPage() {
                                 <button className="btn btn-ghost btn-sm" onClick={() => { setShowDetail(null); setDetailOrg(null); }}><X size={18} /></button>
                             </div>
 
-                            <div style={{ display: 'flex', borderBottom: '1px solid var(--border-bright)', marginBottom: '1.5rem', gap: '1rem' }}>
+                            <div className="flex border-b border-border/50 mb-6 gap-6">
                                 <button
-                                    style={{ background: 'none', border: 'none', borderBottom: activeTab === 'members' ? '2px solid var(--lime)' : '2px solid transparent', padding: '0.5rem 0', color: activeTab === 'members' ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: activeTab === 'members' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                                    className={`pb-3 font-medium text-sm transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'members' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
                                     onClick={() => setActiveTab('members')}
                                 >
                                     <Users size={16} /> Members ({detailOrg?.members?.length || 0})
                                 </button>
                                 <button
-                                    style={{ background: 'none', border: 'none', borderBottom: activeTab === 'roles' ? '2px solid var(--lime)' : '2px solid transparent', padding: '0.5rem 0', color: activeTab === 'roles' ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: activeTab === 'roles' ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                                    className={`pb-3 font-medium text-sm transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'roles' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
                                     onClick={() => setActiveTab('roles')}
                                 >
                                     <Shield size={16} /> Roles ({detailOrg?.roles?.length || 0})
@@ -270,204 +276,202 @@ export default function OrganizationsPage() {
                             </div>
 
                             {activeTab === 'members' && (
-                                <>
+                                <div className="space-y-4">
                                     {/* Members Section Header */}
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                                    <div className="flex items-center justify-end mb-2">
                                         {(isSuperAdmin || isSystemAdmin || user?.orgMemberships?.some((m: any) => m.organizationId === detailOrg.id && (m.role === 'ORG_HEAD' || m.permissions.includes('MANAGE_MEMBERS') || m.permissions.includes('ASSIGN_POWERS')))) && (
-                                            <button className="btn btn-primary btn-sm" onClick={() => { setShowAddMember(true); loadAdmins(); }}>
-                                                <PlusCircle size={14} style={{ marginRight: 4 }} /> Add Member
+                                            <button className="inline-flex items-center justify-center gap-1.5 h-8 px-4 rounded-full bg-white/5 hover:bg-white/10 text-foreground border border-white/10 transition-colors text-xs font-bold" onClick={() => { setShowAddMember(true); loadAdmins(); }}>
+                                                <PlusCircle size={14} /> Add Member
                                             </button>
                                         )}
                                     </div>
 
                                     {/* Add Member Form */}
                                     {showAddMember && (
-                                        <div className="card" style={{ padding: '1rem', marginBottom: '1rem', background: 'var(--surface)' }}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                                <div className="form-group">
-                                                    <label className="form-label">Select Admin User</label>
-                                                    <select className="form-select" value={memberForm.userId} onChange={e => setMemberForm(p => ({ ...p, userId: e.target.value }))}>
-                                                        <option value="">— Choose a user —</option>
-                                                        {allAdmins.map(a => (
-                                                            <option key={a.id} value={a.id}>{a.name} — {a.email}</option>
-                                                        ))}
-                                                    </select>
+                                        <div className="p-4 rounded-xl border border-white/10 bg-white/5 shadow-inner mb-4 space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Select Admin User</label>
+                                                <select className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" value={memberForm.userId} onChange={e => setMemberForm(p => ({ ...p, userId: e.target.value }))}>
+                                                    <option value="" className="bg-ink text-foreground">— Choose a user —</option>
+                                                    {allAdmins.map(a => (
+                                                        <option key={a.id} value={a.id} className="bg-ink text-foreground">{a.name} — {a.email}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Role</label>
+                                                <select
+                                                    className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground"
+                                                    value={memberForm.orgRoleId ? `CUSTOM_${memberForm.orgRoleId}` : memberForm.role}
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        if (val.startsWith('CUSTOM_')) {
+                                                            const rid = val.replace('CUSTOM_', '');
+                                                            const r = detailOrg?.roles?.find(x => x.id === rid);
+                                                            setMemberForm(p => ({ ...p, role: 'MEMBER', orgRoleId: rid, permissions: r ? JSON.parse(r.permissions) : [], powerRank: r ? r.powerRank : 0 }));
+                                                        } else {
+                                                            setMemberForm(p => ({ ...p, role: val, orgRoleId: '' }));
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="MEMBER" className="bg-ink text-foreground">Member (No custom role)</option>
+                                                    <option value="ORG_HEAD" className="bg-ink text-foreground">Organization Head</option>
+                                                    {detailOrg?.roles?.length ? <option disabled className="bg-ink text-muted-foreground">──────────</option> : null}
+                                                    {detailOrg?.roles?.map(r => (
+                                                        <option key={r.id} value={`CUSTOM_${r.id}`} className="bg-ink text-foreground">{r.name} (Rank: {r.powerRank})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Permissions</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {PERMISSIONS.map(p => (
+                                                        <label key={p.key} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                                                            <input type="checkbox" checked={memberForm.permissions.includes(p.key)} disabled={memberForm.role === 'ORG_HEAD'} className="rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
+                                                                onChange={() => setMemberForm(prev => ({
+                                                                    ...prev,
+                                                                    permissions: prev.permissions.includes(p.key)
+                                                                        ? prev.permissions.filter(x => x !== p.key)
+                                                                        : [...prev.permissions, p.key]
+                                                                }))} />
+                                                            {p.label}
+                                                        </label>
+                                                    ))}
                                                 </div>
-                                                <div className="form-group">
-                                                    <label className="form-label">Role</label>
-                                                    <select
-                                                        className="form-select"
-                                                        value={memberForm.orgRoleId ? `CUSTOM_${memberForm.orgRoleId}` : memberForm.role}
-                                                        onChange={e => {
-                                                            const val = e.target.value;
-                                                            if (val.startsWith('CUSTOM_')) {
-                                                                const rid = val.replace('CUSTOM_', '');
-                                                                const r = detailOrg?.roles?.find(x => x.id === rid);
-                                                                setMemberForm(p => ({ ...p, role: 'MEMBER', orgRoleId: rid, permissions: r ? JSON.parse(r.permissions) : [], powerRank: r ? r.powerRank : 0 }));
-                                                            } else {
-                                                                setMemberForm(p => ({ ...p, role: val, orgRoleId: '' }));
-                                                            }
-                                                        }}
-                                                    >
-                                                        <option value="MEMBER">Member (No custom role)</option>
-                                                        <option value="ORG_HEAD">Organization Head</option>
-                                                        {detailOrg?.roles?.length ? <option disabled>──────────</option> : null}
-                                                        {detailOrg?.roles?.map(r => (
-                                                            <option key={r.id} value={`CUSTOM_${r.id}`}>{r.name} (Rank: {r.powerRank})</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="form-label">Permissions</label>
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                                        {PERMISSIONS.map(p => (
-                                                            <label key={p.key} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                                                                <input type="checkbox" checked={memberForm.permissions.includes(p.key)} disabled={memberForm.role === 'ORG_HEAD'}
-                                                                    onChange={() => setMemberForm(prev => ({
-                                                                        ...prev,
-                                                                        permissions: prev.permissions.includes(p.key)
-                                                                            ? prev.permissions.filter(x => x !== p.key)
-                                                                            : [...prev.permissions, p.key]
-                                                                    }))} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Power Rank (0-100) within Org</label>
+                                                <input className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" type="number" min="0" max="100" value={memberForm.powerRank} onChange={e => setMemberForm(p => ({ ...p, powerRank: parseInt(e.target.value) || 0 }))} disabled={memberForm.role === 'ORG_HEAD'} />
+                                                <p className="text-xs text-muted-foreground mt-1">Limits which org members you can modify.</p>
+                                            </div>
+                                            <div className="flex gap-2 justify-end mt-4 pt-4 border-t border-border/30">
+                                                <button className="h-9 px-4 rounded-full bg-white/5 hover:bg-white/10 text-foreground text-xs font-bold transition-colors" onClick={() => setShowAddMember(false)}>Cancel</button>
+                                                <button className="h-9 px-4 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-xs font-bold" onClick={addMember}>Add</button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                {/* Edit Member Form */}
+                                {showEditMember && editingMember && (
+                                    <div className="p-4 rounded-xl border border-white/10 bg-white/5 shadow-inner mb-4 space-y-4">
+                                        <h4 className="font-bold text-foreground">Editing: {editingMember.user.name}</h4>
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Role</label>
+                                                <select
+                                                    className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground"
+                                                    value={editingMember.orgRoleId ? `CUSTOM_${editingMember.orgRoleId}` : editingMember.role}
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        if (val.startsWith('CUSTOM_')) {
+                                                            const rid = val.replace('CUSTOM_', '');
+                                                            const r = detailOrg?.roles?.find(x => x.id === rid);
+                                                            setEditingMember(p => p ? ({ ...p, role: 'MEMBER', orgRoleId: rid, permissions: r ? r.permissions : '[]', powerRank: r ? r.powerRank : 0 }) : null);
+                                                        } else {
+                                                            setEditingMember(p => p ? ({ ...p, role: val, orgRoleId: '' }) : null);
+                                                        }
+                                                    }}
+                                                >
+                                                    <option value="MEMBER" className="bg-ink text-foreground">Member (No custom role)</option>
+                                                    <option value="ORG_HEAD" className="bg-ink text-foreground">Organization Head</option>
+                                                    {detailOrg?.roles?.length ? <option disabled className="bg-ink text-muted-foreground">──────────</option> : null}
+                                                    {detailOrg?.roles?.map(r => (
+                                                        <option key={r.id} value={`CUSTOM_${r.id}`} className="bg-ink text-foreground">{r.name} (Rank: {r.powerRank})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Permissions</label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {PERMISSIONS.map(p => {
+                                                        const currentPerms = JSON.parse(editingMember.permissions || '[]');
+                                                        return (
+                                                            <label key={p.key} className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                                                                <input type="checkbox" checked={currentPerms.includes(p.key)} disabled={editingMember.role === 'ORG_HEAD'} className="rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
+                                                                    onChange={() => setEditingMember(prev => {
+                                                                        if (!prev) return null;
+                                                                        const updatedPerms = currentPerms.includes(p.key)
+                                                                            ? currentPerms.filter((x: string) => x !== p.key)
+                                                                            : [...currentPerms, p.key];
+                                                                        return { ...prev, permissions: JSON.stringify(updatedPerms) };
+                                                                    })} />
                                                                 {p.label}
                                                             </label>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="form-label">Power Rank (0-100) within Org</label>
-                                                    <input className="form-input" type="number" min="0" max="100" value={memberForm.powerRank} onChange={e => setMemberForm(p => ({ ...p, powerRank: parseInt(e.target.value) || 0 }))} disabled={memberForm.role === 'ORG_HEAD'} />
-                                                    <p className="text-secondary mt-1" style={{ fontSize: '0.75rem' }}>Limits which org members you can modify.</p>
-                                                </div>
-                                                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                                    <button className="btn btn-secondary btn-sm" onClick={() => setShowAddMember(false)}>Cancel</button>
-                                                    <button className="btn btn-primary btn-sm" onClick={addMember}>Add</button>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-
-                                    {/* Edit Member Form */}
-                                    {showEditMember && editingMember && (
-                                        <div className="card" style={{ padding: '1rem', marginBottom: '1rem', background: 'var(--surface)' }}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                                <h4 style={{ margin: 0 }}>Editing: {editingMember.user.name}</h4>
-                                                <div className="form-group">
-                                                    <label className="form-label">Role</label>
-                                                    <select
-                                                        className="form-select"
-                                                        value={editingMember.orgRoleId ? `CUSTOM_${editingMember.orgRoleId}` : editingMember.role}
-                                                        onChange={e => {
-                                                            const val = e.target.value;
-                                                            if (val.startsWith('CUSTOM_')) {
-                                                                const rid = val.replace('CUSTOM_', '');
-                                                                const r = detailOrg?.roles?.find(x => x.id === rid);
-                                                                setEditingMember(p => p ? ({ ...p, role: 'MEMBER', orgRoleId: rid, permissions: r ? r.permissions : '[]', powerRank: r ? r.powerRank : 0 }) : null);
-                                                            } else {
-                                                                setEditingMember(p => p ? ({ ...p, role: val, orgRoleId: '' }) : null);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <option value="MEMBER">Member (No custom role)</option>
-                                                        <option value="ORG_HEAD">Organization Head</option>
-                                                        {detailOrg?.roles?.length ? <option disabled>──────────</option> : null}
-                                                        {detailOrg?.roles?.map(r => (
-                                                            <option key={r.id} value={`CUSTOM_${r.id}`}>{r.name} (Rank: {r.powerRank})</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="form-label">Permissions</label>
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                                        {PERMISSIONS.map(p => {
-                                                            const currentPerms = JSON.parse(editingMember.permissions || '[]');
-                                                            return (
-                                                                <label key={p.key} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                                                                    <input type="checkbox" checked={currentPerms.includes(p.key)} disabled={editingMember.role === 'ORG_HEAD'}
-                                                                        onChange={() => setEditingMember(prev => {
-                                                                            if (!prev) return null;
-                                                                            const updatedPerms = currentPerms.includes(p.key)
-                                                                                ? currentPerms.filter((x: string) => x !== p.key)
-                                                                                : [...currentPerms, p.key];
-                                                                            return { ...prev, permissions: JSON.stringify(updatedPerms) };
-                                                                        })} />
-                                                                    {p.label}
-                                                                </label>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="form-label">Power Rank (0-100) within Org</label>
-                                                    <input className="form-input" type="number" min="0" max="100" value={editingMember.powerRank} onChange={e => setEditingMember(p => p ? ({ ...p, powerRank: parseInt(e.target.value) || 0 }) : null)} disabled={editingMember.role === 'ORG_HEAD'} />
-                                                    <p className="text-secondary mt-1" style={{ fontSize: '0.75rem' }}>Limits which org members they can modify.</p>
-                                                </div>
-                                                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                                    <button className="btn btn-secondary btn-sm" onClick={() => setEditingMember(null)}>Cancel</button>
-                                                    <button className="btn btn-primary btn-sm" onClick={updateMember}>Save Power Updates</button>
-                                                </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Power Rank (0-100) within Org</label>
+                                                <input className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" type="number" min="0" max="100" value={editingMember.powerRank} onChange={e => setEditingMember(p => p ? ({ ...p, powerRank: parseInt(e.target.value) || 0 }) : null)} disabled={editingMember.role === 'ORG_HEAD'} />
+                                                <p className="text-xs text-muted-foreground mt-1">Limits which org members they can modify.</p>
+                                            </div>
+                                            <div className="flex gap-2 justify-end mt-4 pt-4 border-t border-border/30">
+                                                <button className="h-9 px-4 rounded-full bg-white/5 hover:bg-white/10 text-foreground text-xs font-bold transition-colors" onClick={() => setEditingMember(null)}>Cancel</button>
+                                                <button className="h-9 px-4 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-xs font-bold" onClick={updateMember}>Save Power Updates</button>
                                             </div>
                                         </div>
-                                    )}
+                                    </div>
+                                )}
 
-                                    {/* Member List */}
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                        {detailOrg?.members?.map(member => {
-                                            const perms = JSON.parse(member.permissions || '[]');
-                                            return (
-                                                <div key={member.id} className="card" style={{ padding: '0.9rem 1rem', background: 'var(--surface)' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                                                            <div style={{ width: 32, height: 32, borderRadius: '50%', background: member.role === 'ORG_HEAD' ? 'var(--amber-glow)' : 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: member.role === 'ORG_HEAD' ? 'var(--amber)' : 'var(--text-secondary)' }}>
-                                                                {member.user.name[0].toUpperCase()}
-                                                            </div>
-                                                            <div>
-                                                                <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text-primary)' }}>{member.user.name}</div>
-                                                                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{member.user.email}</div>
-                                                            </div>
+                                {/* Member List */}
+                                <div className="space-y-3">
+                                    {detailOrg?.members?.map(member => {
+                                        const perms = JSON.parse(member.permissions || '[]');
+                                        return (
+                                            <div key={member.id} className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border ${member.role === 'ORG_HEAD' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-white/5 text-muted-foreground border-white/10'}`}>
+                                                            {member.user.name[0].toUpperCase()}
                                                         </div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                            <span className={`badge ${member.role === 'ORG_HEAD' ? 'badge-pending' : 'badge-confirmed'}`} style={{ fontSize: '0.68rem' }}>
-                                                                {member.role === 'ORG_HEAD' ? '👑 Head' : member.orgRoleId ? (detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.name || 'Custom') : 'Member'}
-                                                            </span>
-                                                            <span className="badge" style={{ background: 'var(--surface-hover)', borderRadius: '4px', fontSize: '0.68rem' }}>
-                                                                Rank {member.orgRoleId ? (detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.powerRank || member.powerRank) : member.powerRank}
-                                                            </span>
-                                                            {(isSuperAdmin || (user?.orgMemberships?.find((m: any) => m.organizationId === detailOrg.id)?.permissions?.includes('ASSIGN_POWERS') || user?.orgMemberships?.find((m: any) => m.organizationId === detailOrg.id)?.role === 'ORG_HEAD')) && (
-                                                                <>
-                                                                    <button className="btn btn-ghost btn-sm" style={{ padding: '0.2rem', color: 'var(--text-secondary)' }} onClick={() => { setEditingMember(member); setShowEditMember(true); }}>
-                                                                        <Users size={14} />
-                                                                    </button>
-                                                                    <button className="btn btn-ghost btn-sm" style={{ padding: '0.2rem', color: 'var(--rose)' }} onClick={() => removeMember(member.id)}>
-                                                                        <X size={14} />
-                                                                    </button>
-                                                                </>
-                                                            )}
+                                                        <div>
+                                                            <div className="font-semibold text-sm text-foreground">{member.user.name}</div>
+                                                            <div className="text-xs text-muted-foreground font-mono">{member.user.email}</div>
                                                         </div>
                                                     </div>
-                                                    {/* Permissions display */}
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                                                        {member.role === 'ORG_HEAD' ? (
-                                                            <span style={{ fontSize: '0.72rem', color: 'var(--amber)', fontFamily: 'var(--font-mono)' }}>ALL PERMISSIONS</span>
-                                                        ) : (
-                                                            (member.orgRoleId ? JSON.parse(detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.permissions || '[]') : perms).length > 0 ? (member.orgRoleId ? JSON.parse(detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.permissions || '[]') : perms).map((p: string) => (
-                                                                <span key={p} style={{ fontSize: '0.68rem', padding: '0.15rem 0.5rem', borderRadius: '99px', background: 'var(--lime-glow)', color: 'var(--lime)', fontFamily: 'var(--font-mono)' }}>{p}</span>
-                                                            )) : (
-                                                                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No special permissions</span>
-                                                            )
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-[0.65rem] px-2 py-1 rounded-full font-bold uppercase tracking-widest ${member.role === 'ORG_HEAD' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-white/10 text-muted-foreground border border-white/20'}`}>
+                                                            {member.role === 'ORG_HEAD' ? '👑 Head' : member.orgRoleId ? (detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.name || 'Custom') : 'Member'}
+                                                        </span>
+                                                        <span className="text-[0.65rem] px-2 py-1 rounded-md font-bold uppercase tracking-widest bg-white/5 text-white/50">
+                                                            Rank {member.orgRoleId ? (detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.powerRank || member.powerRank) : member.powerRank}
+                                                        </span>
+                                                        {(isSuperAdmin || (user?.orgMemberships?.find((m: any) => m.organizationId === detailOrg.id)?.permissions?.includes('ASSIGN_POWERS') || user?.orgMemberships?.find((m: any) => m.organizationId === detailOrg.id)?.role === 'ORG_HEAD')) && (
+                                                            <div className="flex items-center ml-1 opacity-60 hover:opacity-100 transition-opacity">
+                                                                <button className="p-1.5 text-muted-foreground hover:text-sky-400 hover:bg-white/10 rounded-full transition-colors" onClick={() => { setEditingMember(member); setShowEditMember(true); }}>
+                                                                    <Users size={14} />
+                                                                </button>
+                                                                <button className="p-1.5 text-muted-foreground hover:text-rose-400 hover:bg-white/10 rounded-full transition-colors" onClick={() => removeMember(member.id)}>
+                                                                    <X size={14} />
+                                                                </button>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 </div>
-                                            );
-                                        })}
-                                        {(!detailOrg?.members || detailOrg.members.length === 0) && (
-                                            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                                                No members yet. Add the first member above.
+                                                {/* Permissions display */}
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {member.role === 'ORG_HEAD' ? (
+                                                        <span className="text-[0.65rem] font-mono text-amber-500/70 border-b border-amber-500/30 border-dashed pb-0.5 mt-0.5">ALL PERMISSIONS (ORG HEAD)</span>
+                                                    ) : (
+                                                        (member.orgRoleId ? JSON.parse(detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.permissions || '[]') : perms).length > 0 ? (member.orgRoleId ? JSON.parse(detailOrg?.roles?.find(x => x.id === member.orgRoleId)?.permissions || '[]') : perms).map((p: string) => (
+                                                            <span key={p} className="text-[0.6rem] px-1.5 py-0.5 rounded border font-mono bg-lime-500/10 text-lime-400 border-lime-500/20">{p}</span>
+                                                        )) : (
+                                                            <span className="text-[0.65rem] text-white/30 italic">No special permissions</span>
+                                                        )
+                                                    )}
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                </>
-                            )}
+                                        );
+                                    })}
+                                    {(!detailOrg?.members || detailOrg.members.length === 0) && (
+                                        <div className="text-center p-8 text-sm text-muted-foreground border border-dashed border-white/10 rounded-2xl">
+                                            No members yet. Add the first member above.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                             {activeTab === 'roles' && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { FileText, Search, Download, CalendarDays, ExternalLink } from 'lucide-react';
+import { FileText, Search, Download, CalendarDays } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
 interface Report {
@@ -58,7 +58,7 @@ export default function ReportsPage() {
                 <div className="flex items-center gap-2 w-full max-w-sm relative group">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                     <input 
-                        className="flex h-11 w-full rounded-full border border-input bg-secondary/30 pl-10 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground hover:border-white/20 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-sm" 
+                        className="flex h-11 w-full rounded-full border border-white/10 bg-white/5 pl-10 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground hover:bg-white/10 hover:border-white/20 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-sm text-foreground" 
                         placeholder="Search by event or host..."
                         value={search} onChange={e => setSearch(e.target.value)}
                     />
@@ -115,12 +115,16 @@ export default function ReportsPage() {
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             {report.status === 'GENERATED' && report.reportFileUrl ? (
-                                                <a href={report.reportFileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-xs font-bold">
+                                                <a href={report.reportFileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-xs font-bold">
                                                     <Download size={14} /> Download DOCX
                                                 </a>
+                                            ) : report.status === 'ERROR' ? (
+                                                <button disabled className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 cursor-not-allowed text-xs font-bold">
+                                                    Generation Failed
+                                                </button>
                                             ) : (
                                                 <button disabled className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-full bg-white/5 text-white/50 border border-white/10 cursor-not-allowed text-xs font-bold">
-                                                    <ExternalLink size={14} /> Processing
+                                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white/50"></div> Processing
                                                 </button>
                                             )}
                                         </td>

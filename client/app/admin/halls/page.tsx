@@ -58,8 +58,8 @@ export default function HallsPage() {
                     <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">Venue Management</h1>
                     <p className="text-muted-foreground text-base max-w-lg">View and manage campus venues and locations.</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', capacity: '', location: '', description: '' }); }}>
-                    <PlusCircle size={16} strokeWidth={1.75} style={{ marginRight: '0.4rem' }} />
+                <button className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-sm font-bold" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', capacity: '', location: '', description: '' }); }}>
+                    <PlusCircle size={18} strokeWidth={2} />
                     Add Venue
                 </button>
             </div>
@@ -95,12 +95,12 @@ export default function HallsPage() {
                                 {hall.description && <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>{hall.description}</div>}
                             </div>
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button className="btn btn-secondary btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }} onClick={() => startEdit(hall)}>
-                                    <Pencil size={13} strokeWidth={1.75} /> Edit
+                                <button className="inline-flex items-center justify-center gap-1.5 h-8 px-3 flex-1 rounded-full bg-white/5 hover:bg-white/10 text-foreground border border-white/10 transition-colors text-xs font-bold" onClick={() => startEdit(hall)}>
+                                    <Pencil size={12} strokeWidth={2} /> Edit
                                 </button>
                                 {hall.isActive && (
-                                    <button className="btn btn-danger btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }} onClick={() => deactivate(hall.id)}>
-                                        <PowerOff size={13} strokeWidth={1.75} /> Deactivate
+                                    <button className="inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors text-xs font-bold" onClick={() => deactivate(hall.id)}>
+                                        <PowerOff size={12} strokeWidth={2} /> Deactivate
                                     </button>
                                 )}
                             </div>
@@ -121,35 +121,38 @@ export default function HallsPage() {
 
             {/* Venue Form Modal */}
             {showForm && (
-                <div className="modal-overlay" onClick={() => setShowForm(false)}>
-                    <div className="modal" onClick={e => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>{editId ? 'Edit Venue' : 'Add New Venue'}</h3>
-                            <button className="btn btn-ghost btn-sm" onClick={() => setShowForm(false)}><X size={16} /></button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowForm(false)}>
+                    <div className="bento-item max-w-md w-full p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4 pb-4 border-b border-border/50">
+                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                <Building2 size={20} className="text-lime-500" />
+                                {editId ? 'Edit Venue' : 'Add New Venue'}
+                            </h3>
+                            <button className="text-muted-foreground hover:text-foreground hover:bg-white/10 rounded-full p-1 transition-colors" onClick={() => setShowForm(false)}><X size={18} /></button>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <div className="form-group">
-                                <label className="form-label">Venue Name *</label>
-                                <input className="form-input" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Main Auditorium, Central Courtyard" />
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Venue Name *</label>
+                                <input className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Main Auditorium, Central Courtyard" />
                             </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label className="form-label">Capacity *</label>
-                                    <input className="form-input" type="number" value={form.capacity} onChange={e => setForm(p => ({ ...p, capacity: e.target.value }))} placeholder="500" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Capacity *</label>
+                                    <input className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" type="number" value={form.capacity} onChange={e => setForm(p => ({ ...p, capacity: e.target.value }))} placeholder="500" />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Location *</label>
-                                    <input className="form-input" value={form.location} onChange={e => setForm(p => ({ ...p, location: e.target.value }))} placeholder="Block A, Floor 2" />
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Location *</label>
+                                    <input className="flex h-11 w-full rounded-full border border-input bg-secondary/30 px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" value={form.location} onChange={e => setForm(p => ({ ...p, location: e.target.value }))} placeholder="Block A, Floor 2" />
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <label className="form-label">Description</label>
-                                <textarea className="form-textarea" rows={2} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Additional notes about this venue..." />
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Description</label>
+                                <textarea className="flex min-h-[80px] w-full rounded-2xl border border-input bg-secondary/30 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary shadow-inner text-foreground" rows={2} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Additional notes about this venue..." />
                             </div>
-                            {msg && <div className="alert alert-error">{msg}</div>}
-                            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-                                <button className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
-                                <button className="btn btn-primary" onClick={submit}>{editId ? 'Save Changes' : 'Create Venue'}</button>
+                            {msg && <div className="text-rose-400 text-sm font-medium p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">{msg}</div>}
+                            <div className="flex gap-3 justify-end mt-6 pt-4 border-t border-border/50">
+                                <button className="h-10 px-5 rounded-full bg-white/5 hover:bg-white/10 text-foreground text-sm font-bold transition-colors" onClick={() => setShowForm(false)}>Cancel</button>
+                                <button className="h-10 px-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-0.5 text-sm font-bold" onClick={submit}>{editId ? 'Save Changes' : 'Create Venue'}</button>
                             </div>
                         </div>
                     </div>
