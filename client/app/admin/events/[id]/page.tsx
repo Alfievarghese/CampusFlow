@@ -81,11 +81,12 @@ export default function AdminEventDetailPage() {
                 <div className="flex flex-col items-center z-10 w-full">
                     <div className="flex items-center justify-center gap-3 mb-4">
                         <span className={`text-[0.65rem] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest ${
+                            isPast ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20' :
                             event.status === 'CONFIRMED' ? 'bg-lime-500/10 text-lime-400 border border-lime-500/20' :
                             event.status === 'PENDING' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
                             'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                         }`}>
-                            {event.status}
+                            {isPast ? 'COMPLETED' : event.status}
                         </span>
                         <span className="text-[0.65rem] px-3 py-1.5 rounded-full font-bold tracking-widest bg-white/10 border border-white/20 text-white uppercase backdrop-blur-md shadow-sm">
                             {event.category?.name || event.category}
@@ -120,24 +121,24 @@ export default function AdminEventDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-                <div className="md:col-span-2 space-y-8">
+                <div className="md:col-span-2 flex flex-col gap-8">
                     {event.posterUrl && (
                         <div className="rounded-[2rem] overflow-hidden border border-white/5 bg-white/5 aspect-video md:aspect-[21/9] relative shadow-2xl">
                             <img src={event.posterUrl} alt={event.title} className="w-full h-full object-cover" />
                         </div>
                     )}
                     
-                    <div className="bento-item space-y-4">
+                    <div className="bento-item flex flex-col gap-4">
                         <h3 className="text-lg font-semibold flex items-center gap-2 border-b border-border/50 pb-3"><FileText size={18} className="text-primary" /> Description</h3>
                         <p className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">{event.description || 'No description provided.'}</p>
                     </div>
                 </div>
 
-                <div className="space-y-8">
-                    <div className="bento-item space-y-5 relative overflow-hidden">
+                <div className="flex flex-col gap-8">
+                    <div className="bento-item flex flex-col gap-5 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
                         <h3 className="text-xl font-bold border-b border-white/10 pb-4 tracking-tight">Event Details</h3>
-                        <div className="space-y-5 text-sm relative z-10">
+                        <div className="flex flex-col gap-5 text-sm relative z-10">
                             <div className="flex items-start gap-3">
                                 <CalendarDays size={16} className="text-primary mt-0.5" />
                                 <div>
@@ -159,10 +160,10 @@ export default function AdminEventDetailPage() {
                         </div>
                     </div>
 
-                    <div className="bento-item space-y-5 relative overflow-hidden">
+                    <div className="bento-item flex flex-col gap-5 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
                         <h3 className="text-xl font-bold border-b border-white/10 pb-4 tracking-tight">Contact Info</h3>
-                        <div className="space-y-5 text-sm relative z-10">
+                        <div className="flex flex-col gap-5 text-sm relative z-10">
                             <div className="flex items-center gap-3">
                                 <User size={16} className="text-primary" />
                                 <div><span className="font-medium">{event.creator?.name || 'N/A'}</span> <span className="text-muted-foreground">(Organizer)</span></div>

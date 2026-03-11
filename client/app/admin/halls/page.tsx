@@ -53,10 +53,10 @@ export default function HallsPage() {
 
     return (
         <div>
-            <div className="page-header">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="page-title">Venue Management</h1>
-                    <p className="page-subtitle">View and manage campus venues and locations</p>
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">Venue Management</h1>
+                    <p className="text-muted-foreground text-base max-w-lg">View and manage campus venues and locations.</p>
                 </div>
                 <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', capacity: '', location: '', description: '' }); }}>
                     <PlusCircle size={16} strokeWidth={1.75} style={{ marginRight: '0.4rem' }} />
@@ -73,7 +73,7 @@ export default function HallsPage() {
             ) : (
                 <div className="grid-3">
                     {halls.map((hall, i) => (
-                        <div key={hall.id} className={`card anim-slide-up anim-delay-${Math.min(i + 1, 5)}`}>
+                        <div key={hall.id} className={`bento-item hover:scale-[1.02] transition-transform duration-300 anim-slide-up anim-delay-${Math.min(i + 1, 5)}`}>
                             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
                                 <div style={{ width: 44, height: 44, borderRadius: 'var(--radius)', background: 'var(--lime-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <Building2 size={22} strokeWidth={1.5} style={{ color: 'var(--lime)' }} />
@@ -107,9 +107,13 @@ export default function HallsPage() {
                         </div>
                     ))}
                     {halls.length === 0 && (
-                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <Landmark size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>No venues added yet. Add the first venue above.</p>
+                        <div style={{ gridColumn: '1/-1' }} className="flex flex-col items-center justify-center p-20 text-center relative overflow-hidden bento-item mt-4">
+                            <div className="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                            <div className="bg-gradient-to-br from-lime-500/10 to-emerald-500/10 p-5 rounded-full mb-5 border border-lime-500/20">
+                                <Landmark size={36} className="text-lime-500" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 text-foreground">No venues added yet</h3>
+                            <p className="text-muted-foreground max-w-md leading-relaxed mb-4">You haven't added any campus locations. Add the first venue above.</p>
                         </div>
                     )}
                 </div>

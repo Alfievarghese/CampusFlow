@@ -152,10 +152,10 @@ export default function OrganizationsPage() {
 
     return (
         <div>
-            <div className="page-header">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="page-title">Organizations</h1>
-                    <p className="page-subtitle">Manage campus organizations and their members</p>
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">Organizations</h1>
+                    <p className="text-muted-foreground text-base max-w-lg">Manage campus organizations and their members.</p>
                 </div>
                 {(isSuperAdmin || isSystemAdmin) && (
                     <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditId(null); setMsg(''); setForm({ name: '', description: '' }); }}>
@@ -176,7 +176,7 @@ export default function OrganizationsPage() {
                     {orgs.map((org, i) => (
                         <motion.div
                             key={org.id}
-                            className={`card anim-slide-up anim-delay-${Math.min(i + 1, 5)}`}
+                            className={`bento-item anim-slide-up anim-delay-${Math.min(i + 1, 5)}`}
                             whileHover={{ scale: 1.01, y: -2 }}
                             style={{ cursor: 'pointer' }}
                             onClick={() => openDetail(org.id)}
@@ -195,9 +195,13 @@ export default function OrganizationsPage() {
                         </motion.div>
                     ))}
                     {orgs.length === 0 && (
-                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <Building2 size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>No organizations yet. {isSuperAdmin ? 'Create the first one above.' : 'Contact a Super Admin to create one.'}</p>
+                        <div style={{ gridColumn: '1/-1' }} className="flex flex-col items-center justify-center p-20 text-center relative overflow-hidden bento-item mt-4">
+                            <div className="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                            <div className="bg-gradient-to-br from-sky-500/10 to-blue-500/10 p-5 rounded-full mb-5 border border-sky-500/20">
+                                <Building2 size={36} className="text-sky-500" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 text-foreground">No organizations yet</h3>
+                            <p className="text-muted-foreground max-w-md leading-relaxed mb-4">{isSuperAdmin ? 'Ready to get started? Create the first campus organization above.' : 'Contact a Super Admin to create a new organization.'}</p>
                         </div>
                     )}
                 </div>

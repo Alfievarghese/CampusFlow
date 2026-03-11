@@ -43,10 +43,10 @@ export default function EventsPage() {
 
     return (
         <div>
-            <div className="page-header">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="page-title">My Events</h1>
-                    <p className="page-subtitle">Manage events you have created</p>
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">My Events</h1>
+                    <p className="text-muted-foreground text-base max-w-lg">Manage events you have created or host across the campus.</p>
                 </div>
                 <Link href="/admin/events/new" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <PlusCircle size={16} strokeWidth={1.75} />
@@ -56,14 +56,19 @@ export default function EventsPage() {
 
             {msg && <div className="alert alert-success mb-2">{msg}</div>}
 
-            <div className="card">
-                <div className="table-wrap">
+            <div className="bento-item p-0 overflow-hidden relative">
+                <div className="table-wrap border-0">
                     {loading ? (
                         <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}><div className="spinner" style={{ width: 36, height: 36 }} /></div>
                     ) : events.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <CalendarDays size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>No events yet. <Link href="/admin/events/new" style={{ color: 'var(--lime)' }}>Create your first event →</Link></p>
+                        <div className="flex flex-col items-center justify-center p-20 text-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                            <div className="bg-gradient-to-br from-lime-500/10 to-emerald-500/10 p-5 rounded-full mb-5 border border-lime-500/20">
+                                <CalendarDays size={36} className="text-lime-500" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 text-foreground">No events yet</h3>
+                            <p className="text-muted-foreground max-w-md leading-relaxed mb-4">You haven't created any events. Start planning your first campus event today.</p>
+                            <Link href="/admin/events/new" className="text-primary hover:underline font-medium">Create your first event →</Link>
                         </div>
                     ) : (
                         <table className="table">

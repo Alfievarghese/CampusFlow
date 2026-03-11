@@ -513,27 +513,35 @@ function EventCard({ event, index }: { event: Event; index: number }) {
           )}
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            {event.inviteType === 'PUBLIC' ? (
-              <motion.button
-                className="btn btn-primary btn-sm btn-full"
-                onClick={() => { setShowRsvp(true); setMsg(''); }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                + Reserve Spot
-              </motion.button>
-            ) : (
-              <motion.button
-                className="btn btn-secondary btn-sm btn-full"
-                onClick={() => { setShowInviteReq(true); setMsg(''); }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Lock size={12} style={{ marginRight: 4 }} />Request Invite
-              </motion.button>
-            )}
-          </div>
+          {(isLive || isPast) ? (
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button disabled className="btn btn-secondary btn-sm btn-full" style={{ opacity: 0.5, cursor: 'not-allowed', width: '100%' }}>
+                Registration Closed
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {event.inviteType === 'PUBLIC' ? (
+                <motion.button
+                  className="btn btn-primary btn-sm btn-full"
+                  onClick={() => { setShowRsvp(true); setMsg(''); }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  + Reserve Spot
+                </motion.button>
+              ) : (
+                <motion.button
+                  className="btn btn-secondary btn-sm btn-full"
+                  onClick={() => { setShowInviteReq(true); setMsg(''); }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Lock size={12} style={{ marginRight: 4 }} />Request Invite
+                </motion.button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       </motion.div>

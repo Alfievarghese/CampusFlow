@@ -53,10 +53,10 @@ export default function RequestsPage() {
 
     return (
         <div>
-            <div className="page-header">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                    <h1 className="page-title">Requests</h1>
-                    <p className="page-subtitle">Conflict override and invite requests</p>
+                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-1 bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent pb-1">Requests</h1>
+                    <p className="text-muted-foreground text-base max-w-lg">Review conflict overrides and event invitations.</p>
                 </div>
             </div>
 
@@ -87,12 +87,16 @@ export default function RequestsPage() {
             ) : activeTab === 'incoming' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {conflicts.length === 0 ? (
-                        <div className="card" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <InboxIcon size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>No incoming conflict requests.</p>
+                        <div className="flex flex-col items-center justify-center p-20 text-center relative overflow-hidden bento-item">
+                            <div className="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                            <div className="bg-gradient-to-br from-rose-500/10 to-pink-500/10 p-5 rounded-full mb-5 border border-rose-500/20">
+                                <InboxIcon size={36} className="text-rose-500" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 text-foreground">No incoming requests</h3>
+                            <p className="text-muted-foreground max-w-md leading-relaxed">You don't have any pending conflict overrides or invitations to review.</p>
                         </div>
                     ) : conflicts.map(req => (
-                        <div key={req.id} className="card">
+                        <div key={req.id} className="bento-item">
                             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem', gap: '1rem' }}>
                                 <div>
                                     <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', marginBottom: '0.3rem' }}>
@@ -164,12 +168,16 @@ export default function RequestsPage() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {outgoing.length === 0 ? (
-                        <div className="card" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <SendHorizontal size={48} strokeWidth={1} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                            <p>You haven't submitted any override requests.</p>
+                        <div className="flex flex-col items-center justify-center p-20 text-center relative overflow-hidden bento-item">
+                            <div className="absolute inset-0 bg-secondary/5 pointer-events-none"></div>
+                            <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 rounded-full mb-5 border border-indigo-500/20">
+                                <SendHorizontal size={36} className="text-indigo-500" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 text-foreground">No outgoing requests</h3>
+                            <p className="text-muted-foreground max-w-md leading-relaxed">You haven't submitted any conflict override requests for your events.</p>
                         </div>
                     ) : outgoing.map(req => (
-                        <div key={req.id} className="card">
+                        <div key={req.id} className="bento-item">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                                 <div>
                                     <div style={{ fontWeight: 600, marginBottom: '0.3rem' }}>Request for: {req.newEventTitle}</div>
